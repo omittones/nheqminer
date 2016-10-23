@@ -2,7 +2,7 @@
 
 ## Windows:
 
-Windows builds made by us are available here: https://github.com/feeleep75/nheqminer/releases
+Windows builds made by us are available here: https://github.com/etherchain-org/nheqminer/releases
 
 Download and install:
 - Visual Studio 2013 Community: https://www.visualstudio.com/en-us/news/releasenotes/vs2013-community-vs
