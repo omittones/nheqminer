@@ -28,7 +28,7 @@ If you are using a Linux distribution that is not Ubuntu/Debian based you can st
 If run without parameters, miner will start mining with 75% of available virtual cores on NiceHash. Use parameter -h to learn about available parameters:
 
         -h              Print this help and quit
-        -l [location]   Stratum server (zec.coinmine.pl:7007)
+        -l [location]   Stratum server (eu1-zcash.flypool.org:3333)
         -u [username]   Username (worker_name)
         -p [password]   Password (default: x)
         -t [num_thrds]  Number of threads (default: number of sys cores)
