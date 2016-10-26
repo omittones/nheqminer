@@ -43,9 +43,9 @@ void print_help()
 	std::cout << std::endl;
 }
 
-#ifdef WIN32
-void init_logging(boost::log::core_ptr cptr, int level);
-#else
+//#ifdef WIN32
+//void init_logging(boost::log::core_ptr cptr, int level);
+//#else
 #include <iostream>
 
 #include <boost/log/core/core.hpp>
@@ -66,7 +66,7 @@ namespace src = boost::log::sources;
 //namespace flt = boost::log::filters;
 namespace attrs = boost::log::attributes;
 namespace keywords = boost::log::keywords;
-#endif
+//#endif
 
 
 int main(int argc, char* argv[])
@@ -123,9 +123,9 @@ int main(int argc, char* argv[])
 		}
 	}
 
-#ifdef WIN32
-    init_logging(boost::log::core::get(), log_level);
-#else
+//#ifdef WIN32
+    //init_logging(boost::log::core::get(), log_level);
+//#else
     std::cout << "Setting log level to " << log_level << std::endl;
     boost::log::add_console_log(
         std::clog,
@@ -140,9 +140,7 @@ int main(int argc, char* argv[])
     );
     boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
     boost::log::core::get()->add_global_attribute("ThreadID", boost::log::attributes::current_thread_id());
-#endif
-
-
+//#endif
 
 	if (!benchmark)
 	{	
