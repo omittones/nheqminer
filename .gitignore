@@ -420,6 +420,6 @@ build
 
 !nheqminer/libs/**
 !trompequihash/pthreads**
-!nheqminer/boost/**
+!nheqminer/3rdparty/**
 
 nheqminer/libs/win64/*140*

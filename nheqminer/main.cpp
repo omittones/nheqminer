@@ -24,9 +24,9 @@
 
 
 static ZcashStratumClient* scSig;
-extern "C" void stratum_sigint_handler(int signum) 
-{ 
-	if (scSig) scSig->disconnect(); 
+extern "C" void stratum_sigint_handler(int signum)
+{
+	if (scSig) scSig->disconnect();
 }
 
 void print_help()
@@ -43,9 +43,6 @@ void print_help()
 	std::cout << std::endl;
 }
 
-//#ifdef WIN32
-//void init_logging(boost::log::core_ptr cptr, int level);
-//#else
 #include <iostream>
 
 #include <boost/log/core/core.hpp>
@@ -57,31 +54,26 @@ void print_help()
 #include <boost/log/support/date_time.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 
-//namespace logging = boost::log;
-//namespace keywords = boost::log::keywords;
+namespace keywords = boost::log::keywords;
 namespace logging = boost::log;
 namespace sinks = boost::log::sinks;
 namespace src = boost::log::sources;
-//namespace fmt = boost::log::formatters;
-//namespace flt = boost::log::filters;
 namespace attrs = boost::log::attributes;
 namespace keywords = boost::log::keywords;
-//#endif
-
 
 int main(int argc, char* argv[])
 {
 #ifdef WIN32
-	//system("");
+	system("");
 #endif
 	std::cout << "Equihash CPU Miner for NiceHash v" STANDALONE_MINER_VERSION << std::endl;
 	std::cout << "Thanks to Zcash developers for providing most of the code" << std::endl;
 	std::cout << "Special thanks to tromp for providing optimized CPU equihash solver" << std::endl;
 	std::cout << std::endl;
 
-	std::string location = "zec.coinmine.pl:7007";
-	std::string user = "yourworker.1";
-	std::string password = "x";
+	std::string location = "eu1-zcash.flypool.org:3333";
+	std::string user = "tmQfGKWBfobRzW1Sd7bBmpMJPg9SE5YN5mP.miner01";
+	std::string password = "passless";
 	int num_threads = -1;
 	bool benchmark = false;
 	int log_level = 2;
@@ -123,9 +115,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-//#ifdef WIN32
-    //init_logging(boost::log::core::get(), log_level);
-//#else
     std::cout << "Setting log level to " << log_level << std::endl;
     boost::log::add_console_log(
         std::clog,
@@ -140,10 +129,9 @@ int main(int argc, char* argv[])
     );
     boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
     boost::log::core::get()->add_global_attribute("ThreadID", boost::log::attributes::current_thread_id());
-//#endif
 
 	if (!benchmark)
-	{	
+	{
 		size_t delim = location.find(':');
 	        std::string host = location.substr(0, delim);
             	std::string port = location.substr(delim+1);
@@ -160,7 +148,7 @@ int main(int argc, char* argv[])
 				api = nullptr;
 			}
 		}
-		
+
 		ZcashMiner miner(num_threads);
 		ZcashStratumClient sc{
 			io_service, &miner, host, port, user, password, 0, 0
@@ -180,11 +168,11 @@ int main(int argc, char* argv[])
 			{
 				double allshares = speed.GetShareSpeed() * 60;
 				double accepted = speed.GetShareOKSpeed() * 60;
-				BOOST_LOG_TRIVIAL(info) << CL_YLW "Speed [" << INTERVAL_SECONDS << " sec]: " << 
+				BOOST_LOG_TRIVIAL(info) << CL_YLW "Speed [" << INTERVAL_SECONDS << " sec]: " <<
 					speed.GetHashSpeed() << " H/s, " <<
-					speed.GetSolutionSpeed() << " Sol/s" << 
-					//accepted << " AS/min, " << 
-					//(allshares - accepted) << " RS/min" 
+					speed.GetSolutionSpeed() << " Sol/s" <<
+					//accepted << " AS/min, " <<
+					//(allshares - accepted) << " RS/min"
 					CL_N;
 			}
 			if (api) while (api->poll()) { }
