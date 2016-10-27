@@ -382,7 +382,7 @@ void ZcashMiner::start()
 		minerThreads[i] = std::thread(boost::bind(&ZcashMinerThread, this, nThreads, i));
 #ifdef WIN32
 		HANDLE hThread = minerThreads[i].native_handle();
-		if (!SetThreadPriority(hThread, THREAD_PRIORITY_LOWEST))
+		if (!SetThreadPriority(hThread, THREAD_PRIORITY_HIGHEST))
 		{
 			BOOST_LOG_CUSTOM(warning, i) << "Failed to set low priority";
 		}

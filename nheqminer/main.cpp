@@ -64,7 +64,7 @@ namespace keywords = boost::log::keywords;
 int main(int argc, char* argv[])
 {
 #ifdef WIN32
-	system("");
+	system(" ");
 #endif
 	std::cout << "Equihash CPU Miner for NiceHash v" STANDALONE_MINER_VERSION << std::endl;
 	std::cout << "Thanks to Zcash developers for providing most of the code" << std::endl;

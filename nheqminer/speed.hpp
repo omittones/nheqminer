@@ -1,6 +1,10 @@
 #pragma once
 
+#ifndef _DEBUG
 #define INTERVAL_SECONDS 300 // 5 minutes
+#else
+#define INTERVAL_SECONDS 30 // 30 seconds
+#endif
 
 class Speed
 {
