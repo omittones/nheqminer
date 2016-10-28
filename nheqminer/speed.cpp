@@ -2,11 +2,15 @@
 #include <chrono>
 #include <vector>
 #include <mutex>
+#include <algorithm>
 
 #include "speed.hpp"
 
 
-Speed::Speed(int interval) : m_interval(interval) { }
+Speed::Speed(int interval) : m_interval(interval) {
+	this->begining = std::chrono::high_resolution_clock::now();
+}
+
 Speed::~Speed() { }
 
 void Speed::Add(std::vector<time_point>& buffer, std::mutex& mutex)
@@ -20,6 +24,10 @@ double Speed::Get(std::vector<time_point>& buffer, std::mutex& mutex)
 {
 	time_point now = std::chrono::high_resolution_clock::now();
 	time_point past = now - std::chrono::seconds(m_interval);
+
+	std::chrono::duration<double> duration = now - this->begining;
+	auto interval = std::min(duration.count(), (double)m_interval);
+
 	size_t total = 0;
 
 	mutex.lock();
@@ -37,7 +45,7 @@ double Speed::Get(std::vector<time_point>& buffer, std::mutex& mutex)
 	}
 	mutex.unlock();
 
-	return (double)total / (double)m_interval;
+	return (double)total / (double)interval;
 }
 
 void Speed::AddHash()

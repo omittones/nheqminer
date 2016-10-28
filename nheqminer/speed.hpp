@@ -8,9 +8,11 @@
 
 class Speed
 {
-	int m_interval;
-
 	using time_point = std::chrono::high_resolution_clock::time_point;
+
+private:
+	int m_interval;
+	time_point begining;
 
 	std::vector<time_point> m_buffer_hashes;
 	std::vector<time_point> m_buffer_solutions;
