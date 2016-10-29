@@ -153,9 +153,13 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 
 	// 0 = tromp
 	// 1 = avx2
-	// TODO might need to add avx1.
+        // 2 = avx1
 	unsigned int MODE = 0;
 	if (__builtin_cpu_supports("avx2")) {
+		MODE = 2;
+		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX1 solver. ";
+	}
+	else if (__builtin_cpu_supports("avx2")) {
 		MODE = 1;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX2 solver. ";
 	}
@@ -240,8 +244,45 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
                     // We're a pooled miner, so try all solutions
                     return false;
                 };
+
+		if(MODE==2) {
+                //////////////////////////////////////////////////////////////////////////
+                // Xenoncat solver.
+                /////////////////////////////////////////////////////////////////////////
+                // bnonce is 32 bytes, read last four bytes as nonce int and send it to
+                // eh solver method.
+    			unsigned char *tequihash_header = (unsigned char *)&ss[0];
+    			unsigned int tequihash_header_len = ss.size();
+    			unsigned char inputheader[144];
+    			memcpy(inputheader, tequihash_header, tequihash_header_len);
+
+    			// Write 32 byte nonce to input header.
+    			uint256 arthNonce = ArithToUint256(nonce);
+    			memcpy(inputheader + tequihash_header_len, (unsigned  char*) arthNonce.begin(), arthNonce.size());
+
+
+    			EhPrepare(context, (void *) inputheader);
+
+                unsigned char* nonceBegin = bNonce.begin();
+                uint32_t nonceToApi = *(uint32_t *)(nonceBegin+28);
+            	uint32_t numsolutions = EhSolver(context, nonceToApi);
+            	if (!cancelSolver.load()) {
+            		for (uint32_t i=0; i<numsolutions; i++) {
+            			// valid block method expects vector of unsigned chars.
+            			unsigned char* solutionStart = (unsigned char*)(((unsigned char*)context)+1344*i);
+            			unsigned char* solutionEnd = solutionStart + 1344;
+            			std::vector<unsigned char> solution(solutionStart, solutionEnd);
+            			validBlock(solution);
+            		}
+            	}
+				speed.AddHash(); // Metrics, add one hash execution.
+
+            	//////////////////////////////////////////////////////////////////////////
+            	// Xenoncat solver.
+            	/////////////////////////////////////////////////////////////////////////
+		}
 		
-		if(MODE==1) {
+		else if(MODE==1) {
                 //////////////////////////////////////////////////////////////////////////
                 // Xenoncat solver.
                 /////////////////////////////////////////////////////////////////////////
