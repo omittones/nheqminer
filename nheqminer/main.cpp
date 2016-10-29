@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 	std::cout << std::endl;
 
 	std::string location = "eu1-zcash.flypool.org:3333";
-	std::string user = "tmQfGKWBfobRzW1Sd7bBmpMJPg9SE5YN5mP.miner01";
+	std::string user = "t1NMQigcnDRjWkwDKoRMSBeCW1ahqSy48ni.laptop";
 	std::string password = "passless";
 	int num_threads = -1;
 	bool benchmark = false;
