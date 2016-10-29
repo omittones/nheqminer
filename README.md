@@ -87,7 +87,7 @@ If you feel this project is useful to you. Feel free to donate.
 
 I switched AVX2 to AVX1 support, see commits. Builds w/ cmake the same way
 
-Intel(R) Core(TM) i3-2130 CPU @ 3.40GHz (running other stuff as well but ¯\_(ツ)_/¯)
+Running `-b` benchmarks the same, however, in practice I am seeing:
 
-TROMP : 2.97 H/s 5.12 S/s (200/345) 67387ms
-AVX1  : 2.97 H/s 5.54 S/s (200/374) 67421ms
+* 5.6 sol/s -> 9.4 sol/s  w/ -t3 on an Intel(R) Core(TM) i3-2130 CPU @ 3.40GHz (4C) ; Ubuntu 16.04
+* 12.2 sol/s -> 20.2 sol/s w -t6 on an Intel(R) Core(TM) i7-3770S CPU @ 3.10GHz (4C/8HT) ; Arch
