@@ -155,7 +155,7 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 	// 1 = avx2
         // 2 = avx1
 	unsigned int MODE = 0;
-	if (__builtin_cpu_supports("avx2")) {
+	if (__builtin_cpu_supports("avx")) {
 		MODE = 2;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX1 solver. ";
 	}
