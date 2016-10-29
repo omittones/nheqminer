@@ -124,4 +124,4 @@ set(LIBS ${LIBS} ${Boost_LIBRARIES})
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 #target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${CMAKE_THREAD_LIBS_INIT} ${nheqminer_SOURCE_DIR}/equihash_avx2.o)
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${CMAKE_THREAD_LIBS_INIT} ${nheqminer_SOURCE_DIR}/equihash_avx1.o)
