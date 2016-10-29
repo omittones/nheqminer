@@ -83,4 +83,11 @@ If you feel this project is useful to you. Feel free to donate.
     BTC address: 1PqPwYC8u2XCQxJv6qu3HwCRdQkdsqhXRS
 
 
+# lhl's edits
 
+I switched AVX2 to AVX1 support, see commits. Builds w/ cmake the same way
+
+Intel(R) Core(TM) i3-2130 CPU @ 3.40GHz (running other stuff as well but ¯\_(ツ)_/¯)
+
+TROMP : 2.97 H/s 5.12 S/s (200/345) 67387ms
+AVX1  : 2.97 H/s 5.54 S/s (200/374) 67421ms
