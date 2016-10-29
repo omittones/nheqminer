@@ -6,10 +6,7 @@
 #ifndef BITCOIN_SUPPORT_PAGELOCKER_H
 #define BITCOIN_SUPPORT_PAGELOCKER_H
 
-#include "support/cleanse.h"
-
 #include <map>
-
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/once.hpp>
 

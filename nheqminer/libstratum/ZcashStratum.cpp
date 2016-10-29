@@ -17,6 +17,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/circular_buffer.hpp>
 #include "speed.hpp"
+#include <bitset>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -155,7 +156,43 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 	// 1 = avx2
 	// TODO might need to add avx1.
 	unsigned int MODE = 0;
-	if (__builtin_cpu_supports("avx2")) {
+
+#ifdef WIN32
+
+	int cpui[4] = {};
+	std::vector<int[4]> data_;
+
+	// Calling __cpuid with 0x0 as the function_id argument
+	// gets the number of the highest valid function ID.
+	__cpuid(cpui, 0);
+	auto nIds_ = cpui[0];
+	for (int i = 0; i <= nIds_; ++i)
+	{
+		__cpuidex(cpui, i, 0);
+		data_.push_back(cpui);
+	}
+
+	// Capture vendor string
+	char vendor[0x20];
+	memset(vendor, 0, sizeof(vendor));
+	*reinterpret_cast<int*>(vendor + 4) = data_[0][3];
+	*reinterpret_cast<int*>(vendor + 8) = data_[0][2];
+
+	// load bitset with flags for function 0x00000007
+	auto supportsAVX2 = false;
+	if (nIds_ >= 7)
+	{
+		std::bitset<32> bits = data_[7][1];
+		supportsAVX2 = bits[5];
+	}
+	
+#else
+	
+	bool supportsAVX2 = __builtin_cpu_supports("avx2");
+
+#endif 
+	
+	if (supportsAVX2) {
 		MODE = 1;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX2 solver. ";
 	}

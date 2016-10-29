@@ -179,6 +179,15 @@
     <ClInclude Include="trompequihash\equi_miner.h">
       <Filter>Header Files\trompequihash</Filter>
     </ClInclude>
+    <ClInclude Include="trompequihash\pthreads\sched.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="support\allocators\secure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="support\pagelocker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -225,6 +234,12 @@
     </ClCompile>
     <ClCompile Include="trompequihash\blake2\blake2bx.cpp">
       <Filter>Source Files\trompblake</Filter>
+    </ClCompile>
+    <ClCompile Include="support\pagelocker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="primitives\transaction.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
