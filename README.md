@@ -14,7 +14,7 @@ Open **nheqminer.sln** under **nheqminer/nheqminer.sln** and build.
 You should have **CMake** installed (2.8 minimal version), boost (install from the repositories or download boost manually build and install it manually), download the sources manually or via git. 
 Under Ubuntu open a terminal and run the following commands:
   - `sudo apt-get install cmake build-essential libboost-all-dev`
-  - `git clone https://github.com/nicehash/nheqminer.git`
+  - `git clone https://github.com/omittones/nheqminer.git`
   - `cd nheqminer/nheqminer`
   - `mkdir build`
   - `cd build`
@@ -25,7 +25,7 @@ Under Ubuntu open a terminal and run the following commands:
 ## Linux (Ubuntu/Debian based, Tested on Ubuntu 16.04):
 To build under Ubuntu Linux make sure you have Qt5 installed. You can install it manually from [Qt website](https://www.qt.io/) or install it from the command line: `sudo apt-get install qt5-default`.
 Open a terminal and cd to nheqminer root folder and run the following commands (make sure you have qmake in your PATH, if installed manually from Qt website you will have to export it to your PATH):
-  - `git clone https://github.com/etherchain-org/nheqminer.git`
+  - `git clone https://github.com/omittones/nheqminer.git`
   - `cd nheqminer`
   - `mkdir build`
   - `cd build`
@@ -59,3 +59,24 @@ Example to mine:
         nheqmine.exe -l zec.coinmine.pl:7007 -u feeleep.1 -p x -t 6
 
 <i>Note: if you have a 4-core CPU with hyper threading enabled (total 8 threads) it is best to run with only 6 threads (experimental benchmarks shows that best results are achieved with 75% threads utilized)</i>
+
+
+# Sarath's Edits
+
+My integration of Xenoncat's code in nheqminer works only in Linux (I did not verify it in other operating systems). 
+
+## Pointing this miner to other stratum based pools. 
+### supernova
+nheqminer -l zec.suprnova.cc:2142 -u username.workername -p password -t threadCount 
+
+### zmine
+nheqminer  -l zmine.io:1337 -u ZcashTransparentAddress
+
+
+## Donations
+If you feel this project is useful to you. Feel free to donate.
+
+    BTC address: 1PqPwYC8u2XCQxJv6qu3HwCRdQkdsqhXRS
+
+
+
