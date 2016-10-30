@@ -1,18 +1,14 @@
 #pragma once
 
-#ifndef _DEBUG
 #define INTERVAL_SECONDS 300 // 5 minutes
-#else
-#define INTERVAL_SECONDS 30 // 30 seconds
-#endif
 
 class Speed
 {
+	int m_interval;
+
 	using time_point = std::chrono::high_resolution_clock::time_point;
 
-private:
-	int m_interval;
-	time_point begining;
+	time_point m_start;
 
 	std::vector<time_point> m_buffer_hashes;
 	std::vector<time_point> m_buffer_solutions;
