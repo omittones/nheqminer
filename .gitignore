@@ -413,6 +413,9 @@ CMakeLists.txt.user*
 ####
 intermediate/**
 
+/tools/**
+!/tools/index.md
+
 ## ignore exceptions
 !lib/**
 !inc/**
@@ -421,5 +424,4 @@ build
 !nheqminer/libs/**
 !trompequihash/pthreads**
 !nheqminer/3rdparty/**
-
 nheqminer/libs/win64/*140*
