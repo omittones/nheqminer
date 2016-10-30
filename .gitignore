@@ -418,8 +418,13 @@ intermediate/**
 !inc/**
 build
 
+nheqminer/libs/win64/*140*
+
 !nheqminer/libs/**
 !trompequihash/pthreads**
 !nheqminer/3rdparty/**
+!nheqminer/boost/**
+!3rdparty/**
 
-nheqminer/libs/win64/*140*
+# ignore for now
+Linux_projects/**
