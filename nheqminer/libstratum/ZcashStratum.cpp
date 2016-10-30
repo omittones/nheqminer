@@ -168,6 +168,7 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 	__cpuid(cpui, 0);
 	auto nIds_ = cpui[0];
 	// load bitset with flags for function 0x00000007
+	auto supportsAVX1 = false;
 	auto supportsAVX2 = false;
 	for (int i = 0; i <= nIds_; ++i)
 	{
@@ -179,14 +180,23 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 			break;
 		}
 	}
+
+	if (supportsAVX2) {
+		MODE = 1;
+		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX2 solver. ";
+	}
+	else if (supportsAVX1) {
+		MODE = 2;
+		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX1 solver. ";
+	}
+	else {
+		MODE = 0;
+		BOOST_LOG_CUSTOM(info, pos) << "Using Tromp's solver.";
+	}
 	
 #else
 	
-	bool supportsAVX2 = __builtin_cpu_supports("avx2");
-
-#endif 
-	
-	if (supportsAVX2) {
+	if (__builtin_cpu_supports("avx2")) {
 		MODE = 1;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX2 solver. ";
 	}
@@ -198,6 +208,10 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 		MODE = 0;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Tromp's solver.";
 	}
+	
+#endif 
+	
+	
 
 
     try {
