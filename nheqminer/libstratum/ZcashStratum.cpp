@@ -158,32 +158,23 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 	unsigned int MODE = 0;
 
 #ifdef WIN32
-
-	int cpui[4] = {};
-	std::vector<int[4]> data_;
-
+		
 	// Calling __cpuid with 0x0 as the function_id argument
 	// gets the number of the highest valid function ID.
+	int cpui[4];
 	__cpuid(cpui, 0);
 	auto nIds_ = cpui[0];
+	// load bitset with flags for function 0x00000007
+	auto supportsAVX2 = false;
 	for (int i = 0; i <= nIds_; ++i)
 	{
 		__cpuidex(cpui, i, 0);
-		data_.push_back(cpui);
-	}
-
-	// Capture vendor string
-	char vendor[0x20];
-	memset(vendor, 0, sizeof(vendor));
-	*reinterpret_cast<int*>(vendor + 4) = data_[0][3];
-	*reinterpret_cast<int*>(vendor + 8) = data_[0][2];
-
-	// load bitset with flags for function 0x00000007
-	auto supportsAVX2 = false;
-	if (nIds_ >= 7)
-	{
-		std::bitset<32> bits = data_[7][1];
-		supportsAVX2 = bits[5];
+		if (nIds_ == 7)
+		{
+			std::bitset<32> bits = cpui[1];
+			supportsAVX2 = bits[5];
+			break;
+		}
 	}
 	
 #else

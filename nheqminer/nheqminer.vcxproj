@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>logsetuplib.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>logsetuplib.lib;pthreadVC2.lib;equihash_avx2.o;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>msvcrt</IgnoreSpecificDefaultLibraries>
       <AdditionalLibraryDirectories>.\trompequihash\pthreads\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -92,7 +92,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>logsetuplib.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>logsetuplib.lib;pthreadVC2.lib;equihash_avx2.o;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.\trompequihash\pthreads\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -119,7 +119,6 @@
     <ClInclude Include="libstratum\StratumClient.h" />
     <ClInclude Include="libstratum\ZcashStratum.h" />
     <ClInclude Include="primitives\block.h" />
-    <ClInclude Include="primitives\transaction.h" />
     <ClInclude Include="script\script.h" />
     <ClInclude Include="serialize.h" />
     <ClInclude Include="speed.hpp" />
@@ -164,7 +163,6 @@
     <ClCompile Include="libstratum\ZcashStratum.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="primitives\block.cpp" />
-    <ClCompile Include="primitives\transaction.cpp" />
     <ClCompile Include="speed.cpp" />
     <ClCompile Include="support\pagelocker.cpp" />
     <ClCompile Include="trompequihash\blake2\blake2bx.cpp">

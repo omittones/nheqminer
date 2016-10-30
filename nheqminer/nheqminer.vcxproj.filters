@@ -44,9 +44,6 @@
     <ClInclude Include="primitives\block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="primitives\transaction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="serialize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -236,9 +233,6 @@
       <Filter>Source Files\trompblake</Filter>
     </ClCompile>
     <ClCompile Include="support\pagelocker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="primitives\transaction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
