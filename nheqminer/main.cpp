@@ -79,8 +79,8 @@ int main(int argc, char* argv[])
 	std::cout << "Special thanks to tromp for providing optimized CPU equihash solver" << std::endl;
 	std::cout << std::endl;
 
-	std::string location =  "zec.suprnova.cc:2142";
-	std::string user = "suprnova.1";
+	std::string location =  "us1-zcash.flypool.org:3333";
+	std::string user = "t1KKiAYpmUiKZUeCe9HBBwKJ6oPqrpTUMSU";
 	std::string password = "x";
 	int num_threads = -1;
 	bool benchmark = false;
