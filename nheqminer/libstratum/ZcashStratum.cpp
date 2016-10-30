@@ -112,48 +112,48 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 	unsigned int n = PARAMETER_N;
 	unsigned int k = PARAMETER_K;
 
-    std::shared_ptr<std::mutex> m_zmt(new std::mutex);
-    CBlockHeader header;
-    arith_uint256 space;
-    size_t offset;
-    arith_uint256 inc;
-    arith_uint256 target;
+	std::shared_ptr<std::mutex> m_zmt(new std::mutex);
+	CBlockHeader header;
+	arith_uint256 space;
+	size_t offset;
+	arith_uint256 inc;
+	arith_uint256 target;
 	std::string jobId;
 	std::string nTime;
-    std::atomic_bool workReady {false};
-    std::atomic_bool cancelSolver {false};
-	std::atomic_bool pauseMining {false};
+	std::atomic_bool workReady{ false };
+	std::atomic_bool cancelSolver{ false };
+	std::atomic_bool pauseMining{ false };
 
-    miner->NewJob.connect(NewJob_t::slot_type(
+	miner->NewJob.connect(NewJob_t::slot_type(
 		[&m_zmt, &header, &space, &offset, &inc, &target, &workReady, &cancelSolver, pos, &pauseMining, &jobId, &nTime]
-        (const ZcashJob* job) mutable {
-            std::lock_guard<std::mutex> lock{*m_zmt.get()};
-            if (job) {
-            	BOOST_LOG_CUSTOM(debug, pos) << "Loading new job #" << job->jobId();
-				jobId = job->jobId();
-				nTime = job->time;
-                header = job->header;
-                space = job->nonce2Space;
-                offset = job->nonce1Size * 4; // Hex length to bit length
-                inc = job->nonce2Inc;
-                target = job->serverTarget;
-				pauseMining.store(false);
-                workReady.store(true);
-                /*if (job->clean) {
-                    cancelSolver.store(true);
-                }*/
-            } else {
-                workReady.store(false);
-                cancelSolver.store(true);
-				pauseMining.store(true);
-            }
-        }
-    ).track_foreign(m_zmt)); // So the signal disconnects when the mining thread exits
+	(const ZcashJob* job) mutable {
+		std::lock_guard<std::mutex> lock{ *m_zmt.get() };
+		if (job) {
+			BOOST_LOG_CUSTOM(debug, pos) << "Loading new job #" << job->jobId();
+			jobId = job->jobId();
+			nTime = job->time;
+			header = job->header;
+			space = job->nonce2Space;
+			offset = job->nonce1Size * 4; // Hex length to bit length
+			inc = job->nonce2Inc;
+			target = job->serverTarget;
+			pauseMining.store(false);
+			workReady.store(true);
+			/*if (job->clean) {
+				cancelSolver.store(true);
+			}*/
+		}
+		else {
+			workReady.store(false);
+			cancelSolver.store(true);
+			pauseMining.store(true);
+		}
+	}
+	).track_foreign(m_zmt)); // So the signal disconnects when the mining thread exits
 
-    // Initialize context memory.
-	void* context_alloc = malloc(CONTEXT_SIZE+4096);
-	void* context = (void*) (((long) context_alloc+4095) & -4096);
-
+	// Initialize context memory.
+	void* context_alloc = malloc(CONTEXT_SIZE + 4096);
+	void* context = (void*)(((long)context_alloc + 4095) & -4096);
 
 	// 0 = tromp
 	// 1 = avx2
@@ -161,19 +161,20 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 	unsigned int MODE = 0;
 
 #ifdef WIN32
-		
+
 	// Calling __cpuid with 0x0 as the function_id argument
 	// gets the number of the highest valid function ID.
 	int cpui[4];
 	__cpuid(cpui, 0);
-	auto nIds_ = cpui[0];
-	// load bitset with flags for function 0x00000007
+	auto x = cpui[0];
+	//load bitset with flags for function 0x00000007
+	//TODO - build AVX1 detection
 	auto supportsAVX1 = false;
 	auto supportsAVX2 = false;
-	for (int i = 0; i <= nIds_; ++i)
+	for (int i = 0; i <= x; ++i)
 	{
 		__cpuidex(cpui, i, 0);
-		if (nIds_ == 7)
+		if (x == 7)
 		{
 			std::bitset<32> bits = cpui[1];
 			supportsAVX2 = bits[5];
@@ -193,9 +194,9 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 		MODE = 0;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Tromp's solver.";
 	}
-	
+
 #else
-	
+
 	if (__builtin_cpu_supports("avx2")) {
 		MODE = 1;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX2 solver. ";
@@ -208,36 +209,36 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 		MODE = 0;
 		BOOST_LOG_CUSTOM(info, pos) << "Using Tromp's solver.";
 	}
-	
+
 #endif 
-	
-	
 
 
-    try {
-        while (true) {
-            // Wait for work
-            bool expected;
-            do {
-                expected = true;
+
+
+	try {
+		while (true) {
+			// Wait for work
+			bool expected;
+			do {
+				expected = true;
 				if (!miner->minerThreadActive[pos])
 					throw boost::thread_interrupted();
-                //boost::this_thread::interruption_point();
+				//boost::this_thread::interruption_point();
 				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            } while (!workReady.compare_exchange_weak(expected, false));
-            // TODO change atomically with workReady
-            cancelSolver.store(false);
+			} while (!workReady.compare_exchange_weak(expected, false));
+			// TODO change atomically with workReady
+			cancelSolver.store(false);
 
-            // Calculate nonce limits
-            arith_uint256 nonce;
-            arith_uint256 nonceEnd;
+			// Calculate nonce limits
+			arith_uint256 nonce;
+			arith_uint256 nonceEnd;
 			CBlockHeader actualHeader;
 			std::string actualJobId;
 			std::string actualTime;
 			size_t actualNonce1size;
-            {
-                std::lock_guard<std::mutex> lock{*m_zmt.get()};
-                arith_uint256 baseNonce = UintToArith256(header.nNonce);
+			{
+				std::lock_guard<std::mutex> lock{ *m_zmt.get() };
+				arith_uint256 baseNonce = UintToArith256(header.nNonce);
 				arith_uint256 add(pos);
 				nonce = baseNonce | (add << (8 * 31));
 				nonceEnd = baseNonce | ((add + 1) << (8 * 31));
@@ -249,7 +250,7 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 				actualJobId = jobId;
 				actualTime = nTime;
 				actualNonce1size = offset / 4;
-            }
+			}
 
 			// I = the block header minus nonce and solution.
 			CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
@@ -259,16 +260,17 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 				ss << I;
 			}
 
-            // Start working
-            while (true) {
+			// Start working
+			while (true) {
+
 				BOOST_LOG_CUSTOM(debug, pos) << "Running Equihash solver with nNonce = " << nonce.ToString();
 
 				auto bNonce = ArithToUint256(nonce);
-                std::function<bool(std::vector<unsigned char>)> validBlock =
+				std::function<bool(std::vector<unsigned char>)> validBlock =
 					[&m_zmt, &actualHeader, &bNonce, &target, &miner, pos, &actualJobId, &actualTime, &actualNonce1size]
-                        (std::vector<unsigned char> soln) {
-                    //std::lock_guard<std::mutex> lock{*m_zmt.get()};
-                    // Write the solution to the hash and compute the result.
+				(std::vector<unsigned char> soln) {
+					//std::lock_guard<std::mutex> lock{*m_zmt.get()};
+					// Write the solution to the hash and compute the result.
 					BOOST_LOG_CUSTOM(debug, pos) << "Checking solution against target...";
 					actualHeader.nNonce = bNonce;
 					actualHeader.nSolution = soln;
@@ -278,173 +280,174 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 					uint256 headerhash = actualHeader.GetHash();
 					if (UintToArith256(headerhash) > target) {
 						BOOST_LOG_CUSTOM(debug, pos) << "Too large: " << headerhash.ToString();
-                        return false;
-                    }
+						return false;
+					}
 
-                    // Found a solution
+					// Found a solution
 					BOOST_LOG_CUSTOM(debug, pos) << "Found solution with header hash: " << headerhash.ToString();
 					EquihashSolution solution{ bNonce, soln, actualTime, actualNonce1size };
-                    miner->submitSolution(solution, actualJobId);
+					miner->submitSolution(solution, actualJobId);
 
-                    // We're a pooled miner, so try all solutions
-                    return false;
-                };
-		
-		if(MODE==1) { // AVX2
-                //////////////////////////////////////////////////////////////////////////
-                // Xenoncat solver.
-                /////////////////////////////////////////////////////////////////////////
-                // bnonce is 32 bytes, read last four bytes as nonce int and send it to
-                // eh solver method.
-    			unsigned char *tequihash_header = (unsigned char *)&ss[0];
-    			unsigned int tequihash_header_len = ss.size();
-    			unsigned char inputheader[144];
-    			memcpy(inputheader, tequihash_header, tequihash_header_len);
+					// We're a pooled miner, so try all solutions
+					return false;
+				};
 
-    			// Write 32 byte nonce to input header.
-    			uint256 arthNonce = ArithToUint256(nonce);
-    			memcpy(inputheader + tequihash_header_len, (unsigned  char*) arthNonce.begin(), arthNonce.size());
+				if (MODE == 1)
+				{
+					// AVX2
+					//////////////////////////////////////////////////////////////////////////
+					// Xenoncat solver.
+					/////////////////////////////////////////////////////////////////////////
 
+					// bnonce is 32 bytes, read last four bytes as nonce int and send it to
+					// eh solver method.
+					unsigned char *tequihash_header = (unsigned char *)&ss[0];
+					unsigned int tequihash_header_len = ss.size();
+					unsigned char inputheader[144];
+					memcpy(inputheader, tequihash_header, tequihash_header_len);
 
-    			EhPrepare(context, (void *) inputheader);
+					// Write 32 byte nonce to input header.
+					uint256 arthNonce = ArithToUint256(nonce);
+					memcpy(inputheader + tequihash_header_len, (unsigned  char*)arthNonce.begin(), arthNonce.size());
 
-                unsigned char* nonceBegin = bNonce.begin();
-                uint32_t nonceToApi = *(uint32_t *)(nonceBegin+28);
-            	uint32_t numsolutions = EhSolver(context, nonceToApi);
-            	if (!cancelSolver.load()) {
-            		for (uint32_t i=0; i<numsolutions; i++) {
-            			// valid block method expects vector of unsigned chars.
-            			unsigned char* solutionStart = (unsigned char*)(((unsigned char*)context)+1344*i);
-            			unsigned char* solutionEnd = solutionStart + 1344;
-            			std::vector<unsigned char> solution(solutionStart, solutionEnd);
-            			validBlock(solution);
-            		}
-            	}
-				speed.AddHash(); // Metrics, add one hash execution.
+					EhPrepare(context, (void *)inputheader);
 
-            	//////////////////////////////////////////////////////////////////////////
-            	// Xenoncat solver.
-            	/////////////////////////////////////////////////////////////////////////
-		}
-		else if (MODE==2) { // AVX1
-			unsigned char *tequihash_header = (unsigned char *)&ss[0];
-			unsigned int tequihash_header_len = ss.size();
-			unsigned char inputheader[144];
-			memcpy(inputheader, tequihash_header, tequihash_header_len);
+					unsigned char* nonceBegin = bNonce.begin();
+					uint32_t nonceToApi = *(uint32_t *)(nonceBegin + 28);
+					uint32_t numsolutions = EhSolver(context, nonceToApi);
+					if (!cancelSolver.load()) {
+						for (uint32_t i = 0; i < numsolutions; i++) {
+							// valid block method expects vector of unsigned chars.
+							unsigned char* solutionStart = (unsigned char*)(((unsigned char*)context) + 1344 * i);
+							unsigned char* solutionEnd = solutionStart + 1344;
+							std::vector<unsigned char> solution(solutionStart, solutionEnd);
+							validBlock(solution);
+						}
+					}
+					speed.AddHash(); // Metrics, add one hash execution.
+				}
+				else if (MODE == 2)
+				{
+					// AVX1
+					//////////////////////////////////////////////////////////////////////////
+					// Xenoncat solver.
+					/////////////////////////////////////////////////////////////////////////
 
-			// Write 32 byte nonce to input header.
-			uint256 arthNonce = ArithToUint256(nonce);
-			memcpy(inputheader + tequihash_header_len, (unsigned  char*) arthNonce.begin(), arthNonce.size());
+					unsigned char *tequihash_header = (unsigned char *)&ss[0];
+					unsigned int tequihash_header_len = ss.size();
+					unsigned char inputheader[144];
+					memcpy(inputheader, tequihash_header, tequihash_header_len);
 
+					// Write 32 byte nonce to input header.
+					uint256 arthNonce = ArithToUint256(nonce);
+					memcpy(inputheader + tequihash_header_len, (unsigned  char*)arthNonce.begin(), arthNonce.size());
+					
+					EhPrepare_AVX1(context, (void *)inputheader);
 
-			EhPrepare_AVX1(context, (void *) inputheader);
+					unsigned char* nonceBegin = bNonce.begin();
+					uint32_t nonceToApi = *(uint32_t *)(nonceBegin + 28);
+					uint32_t numsolutions = EhSolver_AVX1(context, nonceToApi);
+					if (!cancelSolver.load()) {
+						for (uint32_t i = 0; i < numsolutions; i++) {
+							// valid block method expects vector of unsigned chars.
+							unsigned char* solutionStart = (unsigned char*)(((unsigned char*)context) + 1344 * i);
+							unsigned char* solutionEnd = solutionStart + 1344;
+							std::vector<unsigned char> solution(solutionStart, solutionEnd);
+							validBlock(solution);
+						}
+					}
 
-            unsigned char* nonceBegin = bNonce.begin();
-            uint32_t nonceToApi = *(uint32_t *)(nonceBegin+28);
-        	uint32_t numsolutions = EhSolver_AVX1(context, nonceToApi);
-        	if (!cancelSolver.load()) {
-        		for (uint32_t i=0; i<numsolutions; i++) {
-        			// valid block method expects vector of unsigned chars.
-        			unsigned char* solutionStart = (unsigned char*)(((unsigned char*)context)+1344*i);
-        			unsigned char* solutionEnd = solutionStart + 1344;
-        			std::vector<unsigned char> solution(solutionStart, solutionEnd);
-        			validBlock(solution);
-        		}
-        	}
-			speed.AddHash(); // Metrics, add one hash execution.
-		}
-		else {
-            //////////////////////////////////////////////////////////////////////////
-            // TROMP EQ SOLVER START
-            // I = the block header minus nonce and solution.
-            // Nonce
-            // Create solver and initialize it with header and nonce.
-			unsigned char *tequihash_header = (unsigned char *)&ss[0];
-			unsigned int tequihash_header_len = ss.size();
-			equi eq(1);
-          eq.setnonce((const char *) tequihash_header, tequihash_header_len, (const char*)bNonce.begin(), bNonce.size());
-          eq.digit0(0);
-          eq.xfull = eq.bfull = eq.hfull = 0;
-          eq.showbsizes(0);
-          u32 r = 1;
-          for ( ; r < WK; r++) {
-                  if (cancelSolver.load()) break;
-                  r & 1 ? eq.digitodd(r, 0) : eq.digiteven(r, 0);
-                  eq.xfull = eq.bfull = eq.hfull = 0;
-                  eq.showbsizes(r);
-          }
-          if (r == WK && !cancelSolver.load())
-          {
-                  eq.digitK(0);
+					speed.AddHash(); // Metrics, add one hash execution.
+				}
+				else
+				{
+					//////////////////////////////////////////////////////////////////////////
+					// TROMP EQ SOLVER START
+					// I = the block header minus nonce and solution.
+					// Nonce
+					// Create solver and initialize it with header and nonce.
+					unsigned char *tequihash_header = (unsigned char *)&ss[0];
+					unsigned int tequihash_header_len = ss.size();
+					equi eq(1);
+					eq.setnonce((const char *)tequihash_header, tequihash_header_len, (const char*)bNonce.begin(), bNonce.size());
+					eq.digit0(0);
+					eq.xfull = eq.bfull = eq.hfull = 0;
+					eq.showbsizes(0);
+					u32 r = 1;
+					for (; r < WK; r++) {
+						if (cancelSolver.load()) break;
+						r & 1 ? eq.digitodd(r, 0) : eq.digiteven(r, 0);
+						eq.xfull = eq.bfull = eq.hfull = 0;
+						eq.showbsizes(r);
+					}
+					if (r == WK && !cancelSolver.load())
+					{
+						eq.digitK(0);
 
-                  // Convert solution indices to character array(decompress) and pass it to validBlock method.
-                  u32 nsols = 0;
-                  unsigned s = 0;
-                  for (; s < eq.nsols; s++)
-                  {
-                          if (cancelSolver.load()) break;
-                          nsols++;
-                          std::vector<eh_index> index_vector(PROOFSIZE);
-                          for (u32 i = 0; i < PROOFSIZE; i++) {
-                                  index_vector[i] = eq.sols[s][i];
-                          }
-                          std::vector<unsigned char> sol_char = GetMinimalFromIndices(index_vector, DIGITBITS);
+						// Convert solution indices to character array(decompress) and pass it to validBlock method.
+						u32 nsols = 0;
+						unsigned s = 0;
+						for (; s < eq.nsols; s++)
+						{
+							if (cancelSolver.load()) break;
+							nsols++;
+							std::vector<eh_index> index_vector(PROOFSIZE);
+							for (u32 i = 0; i < PROOFSIZE; i++) {
+								index_vector[i] = eq.sols[s][i];
+							}
+							std::vector<unsigned char> sol_char = GetMinimalFromIndices(index_vector, DIGITBITS);
 
-                          if (validBlock(sol_char))
-                          {
-                                  // If we find a POW solution, do not try other solutions
-                                  // because they become invalid as we created a new block in blockchain.
-                                  //break;
-                          }
-                  }
-                  if (s == eq.nsols)
-                          speed.AddHash();
-          }
-            //////////////////////////////////////////////////////////////////////
-            // TROMP EQ SOLVER END
-            //////////////////////////////////////////////////////////////////////
-		}
+							if (validBlock(sol_char))
+							{
+								// If we find a POW solution, do not try other solutions
+								// because they become invalid as we created a new block in blockchain.
+								//break;
+							}
+						}
+						if (s == eq.nsols)
+							speed.AddHash();
+					}
+				}
 
-                // Check for stop
+				// Check for stop
 				if (!miner->minerThreadActive[pos])
 					throw boost::thread_interrupted();
-                //boost::this_thread::interruption_point();
 
 				// Update nonce
 				nonce += inc;
 
-                if (nonce == nonceEnd) {
-                    break;
-                }
+				if (nonce == nonceEnd) {
+					break;
+				}
 
-                // Check for new work
-                if (workReady.load()) {
+				// Check for new work
+				if (workReady.load()) {
 					BOOST_LOG_CUSTOM(debug, pos) << "New work received, dropping current work";
-                    break;
-                }
+					break;
+				}
 
 				if (pauseMining.load())
 				{
 					BOOST_LOG_CUSTOM(debug, pos) << "Mining paused";
 					break;
 				}
-            }
-        }
-    }
-    catch (const boost::thread_interrupted&)
-    {
+			}
+		}
+	}
+	catch (const boost::thread_interrupted&)
+	{
 		BOOST_LOG_CUSTOM(info, pos) << "Thread #" << pos << " terminated";
-        //throw;
+		//throw;
 		return;
-    }
-    catch (const std::runtime_error &e)
-    {
+	}
+	catch (const std::runtime_error &e)
+	{
 		BOOST_LOG_CUSTOM(info, pos) << "Runtime error: " << e.what();
-        return;
-    }
+		return;
+	}
 
-    // Free the memory allocated previously for xenoncat context.
-    free(context_alloc);
+	//Free the memory allocated previously for xenoncat context.
+	free(context_alloc);
 }
 
 ZcashJob* ZcashJob::clone() const
