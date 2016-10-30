@@ -284,7 +284,7 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
             	// Xenoncat solver.
             	/////////////////////////////////////////////////////////////////////////
 		}
-		if (MODE==2) { // AVX1
+		else if (MODE==2) { // AVX1
 			unsigned char *tequihash_header = (unsigned char *)&ss[0];
 			unsigned int tequihash_header_len = ss.size();
 			unsigned char inputheader[144];
