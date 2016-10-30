@@ -33,11 +33,11 @@ typedef uint32_t eh_index;
 
 #define CONTEXT_SIZE 178033152
 
-extern "C" void EhPrepare(void *context, void *input);
-extern "C" int32_t EhSolver(void *context, uint32_t nonce);
-
 extern "C" void EhPrepare_AVX1(void *context, void *input);
 extern "C" int32_t EhSolver_AVX1(void *context, uint32_t nonce);
+
+extern "C" void EhPrepare_AVX2(void *context, void *input);
+extern "C" int32_t EhSolver_AVX2(void *context, uint32_t nonce);
 
 void CompressArray(const unsigned char* in, size_t in_len,
 	unsigned char* out, size_t out_len,
@@ -104,10 +104,79 @@ std::vector<unsigned char> GetMinimalFromIndices(std::vector<eh_index> indices,
 	return ret;
 }
 
+unsigned int detectMode() {
+
+	// 0 = tromp
+	// 1 = avx2
+	// 2 = avx1
+	unsigned int MODE = 0;
+
+#ifdef WIN32
+
+	// Calling __cpuid with 0x0 as the function_id argument
+	// gets the number of the highest valid function ID.
+	int cpui[4];
+	__cpuid(cpui, 0);
+	auto x = cpui[0];
+	//load bitset with flags for function 0x00000007
+	//TODO - build AVX1 detection
+	bool supportsAVX1 = false;
+	bool supportsAVX2 = false;
+	for (int i = 0; i <= x; ++i)
+	{
+		__cpuidex(cpui, i, 0);
+		if (i == 7)
+		{
+			std::bitset<32> bits = cpui[1];
+			supportsAVX2 = bits[5];
+		}
+	}
+
+	if (supportsAVX2) {
+		MODE = 1;
+	}
+	else if (supportsAVX1) {
+		MODE = 2;
+	}
+	else {
+		MODE = 0;
+	}
+
+#else
+
+	if (__builtin_cpu_supports("avx2")) {
+		MODE = 1;
+	}
+	else if (__builtin_cpu_supports("avx")) {
+		MODE = 2;
+	}
+	else {
+		MODE = 0;
+	}
+
+#endif 
+
+	return MODE;
+}
 
 void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 {
-	BOOST_LOG_CUSTOM(info, pos) << "Starting thread #" << pos;
+	const char* solverType = "unknown";
+
+	auto MODE = detectMode();
+
+	if (MODE == 1) {
+		solverType = "Xenoncat's AVX2 solver. ";
+	}
+	else if (MODE == 2) {
+		MODE = 2;
+		solverType = "Xenoncat's AVX1 solver. ";
+	}
+	else if (MODE == 0) {
+		solverType = "Tromp's solver.";
+	}
+
+	BOOST_LOG_CUSTOM(info, pos) << "Starting thread #" << pos << " : " << solverType;
 
 	unsigned int n = PARAMETER_N;
 	unsigned int k = PARAMETER_K;
@@ -153,67 +222,7 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 
 	// Initialize context memory.
 	void* context_alloc = malloc(CONTEXT_SIZE + 4096);
-	void* context = (void*)(((long)context_alloc + 4095) & -4096);
-
-	// 0 = tromp
-	// 1 = avx2
-	// 2 = avx1
-	unsigned int MODE = 0;
-
-#ifdef WIN32
-
-	// Calling __cpuid with 0x0 as the function_id argument
-	// gets the number of the highest valid function ID.
-	int cpui[4];
-	__cpuid(cpui, 0);
-	auto x = cpui[0];
-	//load bitset with flags for function 0x00000007
-	//TODO - build AVX1 detection
-	auto supportsAVX1 = false;
-	auto supportsAVX2 = false;
-	for (int i = 0; i <= x; ++i)
-	{
-		__cpuidex(cpui, i, 0);
-		if (x == 7)
-		{
-			std::bitset<32> bits = cpui[1];
-			supportsAVX2 = bits[5];
-			break;
-		}
-	}
-
-	if (supportsAVX2) {
-		MODE = 1;
-		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX2 solver. ";
-	}
-	else if (supportsAVX1) {
-		MODE = 2;
-		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX1 solver. ";
-	}
-	else {
-		MODE = 0;
-		BOOST_LOG_CUSTOM(info, pos) << "Using Tromp's solver.";
-	}
-
-#else
-
-	if (__builtin_cpu_supports("avx2")) {
-		MODE = 1;
-		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX2 solver. ";
-	}
-	else if (__builtin_cpu_supports("avx")) {
-		MODE = 2;
-		BOOST_LOG_CUSTOM(info, pos) << "Using Xenoncat's AVX1 solver. ";
-	}
-	else {
-		MODE = 0;
-		BOOST_LOG_CUSTOM(info, pos) << "Using Tromp's solver.";
-	}
-
-#endif 
-
-
-
+	void* context = (void*)(((LONG64)context_alloc + 4095) & -4096);
 
 	try {
 		while (true) {
@@ -310,11 +319,11 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos)
 					uint256 arthNonce = ArithToUint256(nonce);
 					memcpy(inputheader + tequihash_header_len, (unsigned  char*)arthNonce.begin(), arthNonce.size());
 
-					EhPrepare(context, (void *)inputheader);
+					EhPrepare_AVX2(context, (void *)inputheader);
 
 					unsigned char* nonceBegin = bNonce.begin();
 					uint32_t nonceToApi = *(uint32_t *)(nonceBegin + 28);
-					uint32_t numsolutions = EhSolver(context, nonceToApi);
+					uint32_t numsolutions = EhSolver_AVX2(context, nonceToApi);
 					if (!cancelSolver.load()) {
 						for (uint32_t i = 0; i < numsolutions; i++) {
 							// valid block method expects vector of unsigned chars.

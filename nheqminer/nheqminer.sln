@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nheqminer", "nheqminer.vcxproj", "{6FF7D209-05A3-4550-93CC-211D33503719}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -9,6 +9,27 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nheqminer", "nheqminer.vcxp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logsetuplib", "..\logsetuplib\logsetuplib.vcxproj", "{33E90957-F4E3-49BE-97D4-6B7CA3FF93FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xenon", "xenon", "{3A6434A5-32A9-413D-A875-C9C80479DEF9}"
+	ProjectSection(SolutionItems) = preProject
+		external\equihash-xenon\Windows\data_blake2b.asm = external\equihash-xenon\Windows\data_blake2b.asm
+		external\equihash-xenon\Windows\equihash_avx1.asm = external\equihash-xenon\Windows\equihash_avx1.asm
+		external\equihash-xenon\Windows\equihash_avx2.asm = external\equihash-xenon\Windows\equihash_avx2.asm
+		external\equihash-xenon\Windows\macro_blake2b_avx1.asm = external\equihash-xenon\Windows\macro_blake2b_avx1.asm
+		external\equihash-xenon\Windows\macro_blake2b_avx2.asm = external\equihash-xenon\Windows\macro_blake2b_avx2.asm
+		external\equihash-xenon\Windows\macro_eh.asm = external\equihash-xenon\Windows\macro_eh.asm
+		external\equihash-xenon\Windows\params.inc = external\equihash-xenon\Windows\params.inc
+		external\equihash-xenon\Windows\proc_ehprepare_avx1.asm = external\equihash-xenon\Windows\proc_ehprepare_avx1.asm
+		external\equihash-xenon\Windows\proc_ehprepare_avx2.asm = external\equihash-xenon\Windows\proc_ehprepare_avx2.asm
+		external\equihash-xenon\Windows\proc_ehsolver_avx1.asm = external\equihash-xenon\Windows\proc_ehsolver_avx1.asm
+		external\equihash-xenon\Windows\proc_ehsolver_avx2.asm = external\equihash-xenon\Windows\proc_ehsolver_avx2.asm
+		external\equihash-xenon\Windows\quickbench_avx1.asm = external\equihash-xenon\Windows\quickbench_avx1.asm
+		external\equihash-xenon\Windows\quickbench_avx2.asm = external\equihash-xenon\Windows\quickbench_avx2.asm
+		external\equihash-xenon\Windows\README.txt = external\equihash-xenon\Windows\README.txt
+		external\equihash-xenon\Windows\struct_eh.inc = external\equihash-xenon\Windows\struct_eh.inc
+		external\equihash-xenon\Windows\test_avx1.asm = external\equihash-xenon\Windows\test_avx1.asm
+		external\equihash-xenon\Windows\test_avx2.asm = external\equihash-xenon\Windows\test_avx2.asm
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
