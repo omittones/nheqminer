@@ -45,13 +45,8 @@ void print_help()
 {
 	std::cout << "Parameters: " << std::endl;
 	std::cout << "\t-h\t\tPrint this help and quit" << std::endl;
-#ifndef ZCASH_POOL
 	std::cout << "\t-l [location]\tStratum server:port" << std::endl;
-	std::cout << "\t-u [username]\tUsername (bitcoinaddress)" << std::endl;
-#else
-	std::cout << "\t-l [location]\tLocation (eu, usa)" << std::endl;
-	std::cout << "\t-u [username]\tUsername (Zcash wallet address)" << std::endl;
-#endif
+	std::cout << "\t-u [username]\tUsername" << std::endl;
 	std::cout << "\t-a [port]\tLocal API port (default: 0 = do not bind)" << std::endl;
 	std::cout << "\t-d [level]\tDebug print level (0 = print all, 5 = fatal only, default: 2)" << std::endl;
 	std::cout << "\t-b [hashes]\tRun in benchmark mode (default: 200 iterations)" << std::endl;
@@ -228,9 +223,9 @@ int main(int argc, char* argv[])
 	std::cout << "\t==================== www.nicehash.com ====================" << std::endl;
 	std::cout << std::endl;
 
-	std::string location = "equihash.eu.nicehash.com:3357";
-	std::string user = "";
-	std::string password = "x";
+	std::string location = "eu1-zcash.flypool.org:3333";
+	std::string user = "t1NMQigcnDRjWkwDKoRMSBeCW1ahqSy48ni.laptop";
+	std::string password = "passless";
 	int num_threads = -1;
 	bool benchmark = false;
 	int log_level = 2;
