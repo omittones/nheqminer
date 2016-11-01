@@ -19,6 +19,7 @@
 #include "SolverStub.h"
 
 #ifdef USE_CPU_TROMP
+#define __AVX__
 #include "../cpu_tromp/cpu_tromp.hpp"
 #else
 using cpu_tromp = SolverStub;

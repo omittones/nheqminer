@@ -6,7 +6,8 @@
 #define DLL_CPU_TROMP
 #endif
 
-#if !defined(_USRDLL) || (defined(_USRDLL) && defined(__AVX__))
+#if defined(__AVX__)
+
 #define CPU_TROMP cpu_tromp_avx
 #define CPU_TROMP_NAME "CPU-TROMP-AVX"
 
@@ -32,14 +33,8 @@ struct DLL_CPU_TROMP CPU_TROMP
     int use_opt;
 };
 
-#endif
+#elif !defined(__AVX__)
 
-#if !defined(_USRDLL)
-#undef CPU_TROMP
-#undef CPU_TROMP_NAME
-#endif
-
-#if !defined(_USRDLL) || (defined(_USRDLL) && !defined(__AVX__))
 #define CPU_TROMP cpu_tromp_sse2
 #define CPU_TROMP_NAME "CPU-TROMP-SSE2"
 
