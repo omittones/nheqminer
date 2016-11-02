@@ -1,5 +1,6 @@
 # Build instructions:
-
+### Dependencies:
+  - Boost 1.54+
 ## Windows:
 
 Windows builds made by us are available here: https://github.com/nicehash/nheqminer/releases
@@ -15,16 +16,30 @@ Open **nheqminer.sln** under **nheqminer/nheqminer.sln** and build.
 
 ## Linux
 Work in progress.
-Working solvers CPU_TROMP, CPU_XENONCAT:
-Work in progress (CUDA_TROM, OCL_XMP)
+
+Working solvers CPU_TROMP, CPU_XENONCAT, CUDA_TROMP
+
+Work in progress (OCL_XMP)
 ## Linux (Ubuntu 14.04 / 16.04) Build  CPU_XENONCAT:
  - Open terminal and run the following commands:
-   - `sudo apt-get install cmake build-esenital libboost-all-dev`
+   - `sudo apt-get install cmake build-essential libboost-all-dev`
    - `git clone -b Linux https://github.com/nicehash/nheqminer.git`
    - `cd nheqminer/cpu_xenoncat/Linux/asm/ && sh assemble.sh && cd ../../../Linux_cmake/nheqminer_cpu && cmake . && make`
- 
-
-
+ ## Linux (Ubuntu 14.04 / 16.04) Build  CUDA_TROMP:
+ - Open terminal and run the following commands:
+   - **Ubuntu 14.04**:
+     - `wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_8.0.44-1_amd64.deb`
+     - `sudo dpkg -i cuda-repo-ubuntu1404_8.0.44-1_amd64.deb`
+   - **Ubuntu 16.04**:
+     - `wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_8.0.44-1_amd64.deb`
+     - `sudo dpkg -i cuda-repo-ubuntu1604_8.0.44-1_amd64.deb`
+   - `sudo apt-get update`
+   - `sudo apt-get install cuda`
+   - `sudo apt-get install cuda-toolkit-8-0`
+   - `sudo apt-get install cmake build-essential libboost-all-dev`
+   - `git clone -b Linux https://github.com/nicehash/nheqminer.git`
+   - `cd nheqminer/Linux_cmake/nheqminer_cuda_tromp && cmake . && make`
+   - or specify your compute version for example 50 like so `cd nheqminer/Linux_cmake/nheqminer_cuda_tromp && cmake COMPUTE=50 . && make`
 
 # Run instructions:
 
@@ -49,12 +64,10 @@ Example to run with full logging (including network dump):
         
 Example to mine with your own BTC address and worker1 on USA server:
 
-        nheqminer_x64_AVX.exe -l usa -u YOUR_BTC_ADDRESS_HERE.worker1
+        nheqminer_x64_AVX.exe -l equihash.usa.nicehash.com:3357 -u YOUR_BTC_ADDRESS_HERE.worker1
 
 Example to mine with your own BTC address and worker1 on EU server, using 6 threads:
 
-        nheqminer_x64_AVX.exe -l eu -u YOUR_BTC_ADDRESS_HERE.worker1 -t 6
+        nheqminer_x64_AVX.exe -l equihash.eu.nicehash.com:3357 -u YOUR_BTC_ADDRESS_HERE.worker1 -t 6
 
 <i>Note: if you have a 4-core CPU with hyper threading enabled (total 8 threads) it is best to run with only 6 threads (experimental benchmarks shows that best results are achieved with 75% threads utilized)</i>
-
-0

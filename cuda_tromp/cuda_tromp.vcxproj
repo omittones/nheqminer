@@ -28,7 +28,9 @@
     <ClCompile Include="cuda_tromp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="equi_miner.cu" />
+    <CudaCompile Include="equi_miner.cu">
+      <CodeGeneration>compute_52,sm_52;compute_50,sm_50</CodeGeneration>
+    </CudaCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{33C2B469-F025-4223-B9B6-E69D42FEA7D6}</ProjectGuid>
