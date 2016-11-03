@@ -5,7 +5,10 @@
 #include "primitives/block.h"
 #include "streams.h"
 
+//fucking templates have to have cpp in header
 #include "libstratum/StratumClient.h"
+#include "libstratum/StratumClient.cpp"
+
 #include "../cuda_tromp/cuda_tromp.hpp"
 #include "solver/solver.h"
 #include "solver/factory.h"
@@ -48,8 +51,8 @@ namespace keywords = boost::log::keywords;
 int use_avx = 0;
 int use_avx2 = 0;
 
+StratumClient<ZcashMiner, ZcashJob, EquihashSolution>;
 typedef StratumClient<ZcashMiner, ZcashJob, EquihashSolution> ZcashStratumClient;
-
 ZcashStratumClient* stratum_client;
 
 extern "C" void stratum_sigint_handler(int signum)
