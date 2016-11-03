@@ -8,12 +8,15 @@
 //fucking templates have to have cpp in header
 #include "libstratum/StratumClient.h"
 #include "libstratum/StratumClient.cpp"
-
-#include "../cuda_tromp/cuda_tromp.hpp"
 #include "solver/solver.h"
 #include "solver/factory.h"
 
+#ifdef USE_CUDA_TROMP
+#include "../cuda_tromp/cuda_tromp.hpp"
+#endif
+#ifdef USE_OCL_XMP
 #include "../ocl_device_utils/ocl_device_utils.h"
+#endif
 
 #include <thread>
 #include <chrono>
@@ -75,7 +78,6 @@ void print_help()
 	std::cout << std::endl;
 	std::cout << "NVIDIA CUDA settings" << std::endl;
 	std::cout << "\t-ci\t\tCUDA info" << std::endl;
-	std::cout << "\t-cv [ver]\tSet CUDA version (0 = default 8.0, 1 = 7.5)" << std::endl;
 	std::cout << "\t-cd [devices]\tEnable CUDA mining on spec. devices" << std::endl;
 	std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
 	std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
@@ -221,9 +223,6 @@ int main(int argc, char* argv[])
 			case 'i':
 				print_cuda_info();
 				return 0;
-			case 'v':
-				use_old_cuda = atoi(argv[++i]);
-				break;
 			case 'd':
 				while (cuda_device_count < 8 && i + 1 < argc)
 				{

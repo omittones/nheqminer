@@ -15,7 +15,6 @@
 #include "../cuda_tromp/cuda_tromp.hpp"
 #endif
 #ifdef USE_OCL_XMP
-#include "../ocl_xpm/ocl_xmp.hpp"
 #include "../ocl_xpm/ocl_silentarmy.hpp"
 #endif
 

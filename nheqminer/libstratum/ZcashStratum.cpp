@@ -622,7 +622,7 @@ void ZcashMiner::doBenchmark(int hashes, std::vector<Solver*> solvers)
 	auto start = std::chrono::high_resolution_clock::now();
 
 	int i = 0;
-	for ( ; i < solvers.size(); ++i)
+	for (; i < solvers.size(); ++i)
 		bthreads[i] = std::thread(boost::bind(&benchmark_thread, i, solvers.at(i)));
 
 	for (int i = 0; i < nThreads; ++i)
@@ -640,3 +640,4 @@ void ZcashMiner::doBenchmark(int hashes, std::vector<Solver*> solvers)
 	BOOST_LOG_TRIVIAL(info) << "Total solutions found: " << benchmark_solutions;
 	BOOST_LOG_TRIVIAL(info) << "Speed: " << ((double)hashes_done * 1000 / (double)msec) << " I/s";
 	BOOST_LOG_TRIVIAL(info) << "Speed: " << ((double)benchmark_solutions * 1000 / (double)msec) << " Sols/s";
+}

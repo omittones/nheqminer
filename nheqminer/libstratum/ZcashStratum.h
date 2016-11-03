@@ -72,32 +72,33 @@ class ZcashMiner
 private:
 	int nThreads;
 	std::thread* minerThreads;
-    uint256 nonce1;
-    size_t nonce1Size;
-    arith_uint256 nonce2Space;
-    arith_uint256 nonce2Inc;
-    std::function<bool(const EquihashSolution&, const std::string&)> solutionFoundCallback;
+	uint256 nonce1;
+	size_t nonce1Size;
+	arith_uint256 nonce2Space;
+	arith_uint256 nonce2Inc;
+	std::function<bool(const EquihashSolution&, const std::string&)> solutionFoundCallback;
 	bool m_isActive;
 	std::vector<Solver*> solvers;
 
 public:
-    NewJob_t NewJob;
+	NewJob_t NewJob;
 	bool* minerThreadActive;
 
 	ZcashMiner(std::vector<Solver*> solvers);
 	~ZcashMiner();
 
-    std::string userAgent();
-    void start();
-    void stop();
+	std::string userAgent();
+	void start();
+	void stop();
 	bool isMining() { return m_isActive; }
 	void setServerNonce(const std::string& n1str);
-    ZcashJob* parseJob(const Array& params);
-    void setJob(ZcashJob* job);
+	ZcashJob* parseJob(const Array& params);
+	void setJob(ZcashJob* job);
 	void onSolutionFound(const std::function<bool(const EquihashSolution&, const std::string&)> callback);
 	void submitSolution(const EquihashSolution& solution, const std::string& jobid);
-    void acceptedSolution(bool stale);
-    void rejectedSolution(bool stale);
-    void failedSolution();
+	void acceptedSolution(bool stale);
+	void rejectedSolution(bool stale);
+	void failedSolution();
 
 	static void doBenchmark(int hashes, std::vector<Solver*> solvers);
+};
