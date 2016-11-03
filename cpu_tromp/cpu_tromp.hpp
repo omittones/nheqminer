@@ -4,7 +4,7 @@
 #define DLL_PREFIX
 #endif
 
-#include "solver\solver.h"
+#include "solver/solver.h"
 
 #if defined(__AVX__)
 
@@ -18,14 +18,9 @@
 
 struct DLL_PREFIX cpu_tromp : Solver
 {
-protected:
-
-	int use_avx2;
-
 public:
 
-	cpu_tromp(bool use_avx2) : Solver(0, 0) {
-		this->use_avx2 = use_avx2;
+	cpu_tromp() : Solver(0, 0) {
 	}
 
 	std::string getdevinfo() { return ""; }

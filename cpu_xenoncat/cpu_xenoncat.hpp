@@ -4,7 +4,7 @@
 #define DLL_PREFIX
 #endif
 
-#include "solver\solver.h"
+#include "solver/solver.h"
 
 struct DLL_PREFIX cpu_xenoncat : Solver
 {
@@ -22,6 +22,8 @@ public:
 
 	void start();
 	void stop();
+	int getcount();
+	void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
 	void solve(const char *header,
 		unsigned int header_len,
 		const char* nonce,

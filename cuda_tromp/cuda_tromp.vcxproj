@@ -69,13 +69,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Arch61|x64'">
-    <OutDir>$(SolutionDir)$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Arch50|x64'">
-    <OutDir>$(SolutionDir)$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

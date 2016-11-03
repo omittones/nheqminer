@@ -15,9 +15,6 @@
 
 using namespace json_spirit;
 
-extern int use_avx;
-extern int use_avx2;
-
 struct EquihashSolution
 {
     uint256 nonce;

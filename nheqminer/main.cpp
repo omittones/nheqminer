@@ -48,11 +48,8 @@ namespace keywords = boost::log::keywords;
 // file logging
 // mingw compilation for windows (faster?)
 
-int use_avx = 0;
-int use_avx2 = 0;
-
-StratumClient<ZcashMiner, ZcashJob, EquihashSolution>;
 typedef StratumClient<ZcashMiner, ZcashJob, EquihashSolution> ZcashStratumClient;
+
 ZcashStratumClient* stratum_client;
 
 extern "C" void stratum_sigint_handler(int signum)
@@ -72,7 +69,7 @@ void print_help()
 	std::cout << std::endl;
 	std::cout << "CPU settings" << std::endl;
 	std::cout << "\t-t [num_thrds]\tNumber of CPU threads" << std::endl;
-	std::cout << "\t-e [ext]\tForce CPU ext (0 = SSE2, 1 = AVX, 2 = AVX2)" << std::endl;
+	std::cout << "\t-e [ext]\tForce CPU ext (1 = SSE2, 2 = AVX, 3 = AVX2)" << std::endl;
 	std::cout << std::endl;
 	std::cout << "NVIDIA CUDA settings" << std::endl;
 	std::cout << "\t-ci\t\tCUDA info" << std::endl;
@@ -120,41 +117,6 @@ int cuda_tpb[8] = { 0 };
 
 int opencl_enabled[8] = { 0 };
 // todo: opencl local and global worksize
-
-
-void detect_AVX_and_AVX2()
-{
-    // Fix on Linux
-	//int cpuInfo[4] = {-1};
-	std::array<int, 4> cpui;
-	std::vector<std::array<int, 4>> data_;
-	std::bitset<32> f_1_ECX_;
-	std::bitset<32> f_7_EBX_;
-
-	// Calling __cpuid with 0x0 as the function_id argument
-	// gets the number of the highest valid function ID.
-	__cpuid(cpui.data(), 0);
-	int nIds_ = cpui[0];
-
-	for (int i = 0; i <= nIds_; ++i)
-	{
-		__cpuidex(cpui.data(), i, 0);
-		data_.push_back(cpui);
-	}
-
-	if (nIds_ >= 1)
-	{
-		f_1_ECX_ = data_[1][2];
-		use_avx = f_1_ECX_[28];
-	}
-
-	// load bitset with flags for function 0x00000007
-	if (nIds_ >= 7)
-	{
-		f_7_EBX_ = data_[7][1];
-		use_avx2 = f_7_EBX_[5];
-	}
-}
 
 void start_mining(int api_port, 
 	std::vector<Solver*> solvers,
@@ -238,7 +200,7 @@ int main(int argc, char* argv[])
 	int cuda_tbpc = 0;
 	int opencl_platform = 0;
 	int opencl_device_count = 0;
-	int force_cpu_ext = -1;
+	ForceMode forceCpuExt = ForceMode::NONE;
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -246,6 +208,7 @@ int main(int argc, char* argv[])
 
 		switch (argv[i][1])
 		{
+#if USE_CUDA_TROMP
 		case 'c':
 		{
 			switch (argv[i][2])
@@ -301,6 +264,7 @@ int main(int argc, char* argv[])
 			}
 			break;
 		}
+#endif
 #ifdef USE_OCL_XMP
 		case 'o':
 		{
@@ -359,27 +323,11 @@ int main(int argc, char* argv[])
 			api_port = atoi(argv[++i]);
 			break;
 		case 'e':
-			force_cpu_ext = atoi(argv[++i]);
+			forceCpuExt = (ForceMode)max(0, min(3, atoi(argv[++i])));
 			break;
 		}
 	}
-
-	if (force_cpu_ext >= 0)
-	{
-		switch (force_cpu_ext)
-		{
-		case 1:
-			use_avx = 1;
-			break;
-		case 2:
-			use_avx = 1;
-			use_avx2 = 1;
-			break;
-		}
-	}
-	else
-		detect_AVX_and_AVX2();
-
+	
 	// init_logging init START
     std::cout << "Setting log level to " << log_level << std::endl;
     boost::log::add_console_log(
@@ -396,13 +344,9 @@ int main(int argc, char* argv[])
     boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
     boost::log::core::get()->add_global_attribute("ThreadID", boost::log::attributes::current_thread_id());
 	// init_logging init END
-
-	BOOST_LOG_TRIVIAL(info) << "Using SSE2: YES";
-	BOOST_LOG_TRIVIAL(info) << "Using AVX: " << (use_avx ? "YES" : "NO");
-	BOOST_LOG_TRIVIAL(info) << "Using AVX2: " << (use_avx2 ? "YES" : "NO");
-
+	
 	auto solvers = Factory::AllocateSolvers(
-		num_threads, use_avx2,
+		num_threads, forceCpuExt,
 		cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb,
 		opencl_device_count, opencl_platform, opencl_enabled
 	);
