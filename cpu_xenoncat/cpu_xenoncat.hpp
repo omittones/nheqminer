@@ -14,7 +14,7 @@ private:
 
 public:
 
-	std::string getdevinfo() { return "processor"; }
+	std::string getdevinfo() { return "CPU"; }
 
 	cpu_xenoncat(bool use_avx2) {
 		this->use_avx2 = use_avx2;

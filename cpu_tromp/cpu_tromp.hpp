@@ -23,7 +23,7 @@ public:
 	cpu_tromp() {
 	}
 
-	std::string getdevinfo() { return "processor"; }
+	std::string getdevinfo() { return "CPU"; }
 
 	void start();
 
