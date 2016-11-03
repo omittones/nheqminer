@@ -102,7 +102,7 @@ void print_cuda_info()
 }
 
 void print_opencl_info() {
-	ocl_xmp::print_opencl_devices();
+	open_cl_solver::print_opencl_devices();
 }
 
 
