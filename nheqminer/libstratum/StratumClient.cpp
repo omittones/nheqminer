@@ -420,7 +420,3 @@ bool StratumClient<Miner, Job, Solution>::submit(const Solution* solution, const
 
 	return true;
 }
-
-template class StratumClient<ZMinerAVX, ZcashJob, EquihashSolution>;
-template class StratumClient<ZMinerSSE2, ZcashJob, EquihashSolution>;
-

@@ -7,6 +7,8 @@
 
 #include "libstratum/StratumClient.h"
 #include "../cuda_tromp/cuda_tromp.hpp"
+#include "solver/solver.h"
+#include "solver/factory.h"
 
 #include <thread>
 #include <chrono>
@@ -151,10 +153,13 @@ void detect_AVX_and_AVX2()
 	}
 }
 
-void start_mining(int api_port, int cpu_threads, 
-	int cuda_device_count, int opencl_device_count, int opencl_platform,
-	const std::string& host, const std::string& port, const std::string& user, 
-	const std::string& password, ZcashStratumClient** handler)
+void start_mining(int api_port, 
+	std::vector<Solver*> solvers,
+	const std::string& host, 
+	const std::string& port, 
+	const std::string& user, 
+	const std::string& password, 
+	ZcashStratumClient** handler)
 {
 	std::shared_ptr<boost::asio::io_service> io_service(new boost::asio::io_service);
 
@@ -168,12 +173,7 @@ void start_mining(int api_port, int cpu_threads,
 			api = nullptr;
 		}
 	}
-
-	std::vector<Solver*> solvers;
-
-	//TODO - create solvers
-	//cpu_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled
-
+	
 	ZcashMiner miner { solvers };
 	ZcashStratumClient sc {
 		io_service, &miner, host, port, user, password, 0, 0
@@ -209,8 +209,8 @@ void start_mining(int api_port, int cpu_threads,
 
 int main(int argc, char* argv[])
 {
-#if defined(WIN32) && defined(NDEBUG)
-	system(""); // windows 10 colored console
+#ifdef WIN32
+	system(" "); // windows 10 colored console
 #endif
 
 	std::cout << std::endl;
@@ -398,12 +398,14 @@ int main(int argc, char* argv[])
 	BOOST_LOG_TRIVIAL(info) << "Using AVX: " << (use_avx ? "YES" : "NO");
 	BOOST_LOG_TRIVIAL(info) << "Using AVX2: " << (use_avx2 ? "YES" : "NO");
 
-	std::vector<Solver*> solvers;
+	auto solvers = Factory::AllocateSolvers(
+		num_threads, use_avx2,
+		cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb,
+		opencl_device_count, opencl_platform, opencl_enabled
+	);
 
 	try
 	{
-		//num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled
-
 		if (!benchmark)
 		{
 			if (user.length() == 0)
@@ -416,8 +418,7 @@ int main(int argc, char* argv[])
 			std::string host = delim != std::string::npos ? location.substr(0, delim) : location;
 			std::string port = delim != std::string::npos ? location.substr(delim + 1) : "2142";
 
-			start_mining(api_port, num_threads, cuda_device_count, opencl_device_count, opencl_platform,
-				host, port, user, password, &stratum_client);
+			start_mining(api_port, solvers, host, port, user, password, &stratum_client);
 		}
 		else
 		{

@@ -6,18 +6,18 @@
 #include "cpu_tromp.hpp"
 
 
-void CPU_TROMP::start(CPU_TROMP& device_context) { }
+void cpu_tromp::start(cpu_tromp& device_context) { }
 
-void CPU_TROMP::stop(CPU_TROMP& device_context) { }
+void cpu_tromp::stop(cpu_tromp& device_context) { }
 
-void CPU_TROMP::solve(const char *tequihash_header,
+void cpu_tromp::solve(const char *tequihash_header,
 	unsigned int tequihash_header_len,
 	const char* nonce,
 	unsigned int nonce_len,
 	std::function<bool()> cancelf,
 	std::function<void(const std::vector<uint32_t>&, size_t, const unsigned char*)> solutionf,
 	std::function<void(void)> hashdonef,
-	CPU_TROMP& device_context)
+	cpu_tromp& device_context)
 {
 	equi eq(1);
 	eq.setnonce(tequihash_header, tequihash_header_len, nonce, nonce_len);

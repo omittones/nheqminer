@@ -164,9 +164,6 @@
     <ClInclude Include="..\ocl_xpm\ocl_xmp.hpp">
       <Filter>Header Files\solvers</Filter>
     </ClInclude>
-    <ClInclude Include="SolverStub.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="solver\solver.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -129,7 +129,6 @@
     <ClInclude Include="primitives\transaction.h" />
     <ClInclude Include="script\script.h" />
     <ClInclude Include="serialize.h" />
-    <ClInclude Include="SolverStub.h" />
     <ClInclude Include="solver\factory.h" />
     <ClInclude Include="solver\solver.h" />
     <ClInclude Include="speed.hpp" />
