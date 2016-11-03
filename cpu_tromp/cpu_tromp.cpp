@@ -5,22 +5,28 @@
 #include "equi_miner.h"
 #include "cpu_tromp.hpp"
 
+void cpu_tromp::start() { }
 
-void cpu_tromp::start(cpu_tromp& device_context) { }
+void cpu_tromp::stop() { }
 
-void cpu_tromp::stop(cpu_tromp& device_context) { }
+int cpu_tromp::getcount() {
+	return 0;
+}
 
-void cpu_tromp::solve(const char *tequihash_header,
-	unsigned int tequihash_header_len,
+void cpu_tromp::getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version) {
+}
+
+void cpu_tromp::solve(
+	const char *header,
+	unsigned int header_len,
 	const char* nonce,
 	unsigned int nonce_len,
 	std::function<bool()> cancelf,
 	std::function<void(const std::vector<uint32_t>&, size_t, const unsigned char*)> solutionf,
-	std::function<void(void)> hashdonef,
-	cpu_tromp& device_context)
+	std::function<void(void)> hashdonef)
 {
 	equi eq(1);
-	eq.setnonce(tequihash_header, tequihash_header_len, nonce, nonce_len);
+	eq.setnonce(header, header_len, nonce, nonce_len);
 	eq.digit0(0);
 	eq.xfull = eq.bfull = eq.hfull = 0;
 	u32 r = 1;
@@ -45,5 +51,6 @@ void cpu_tromp::solve(const char *tequihash_header,
 		solutionf(index_vector, DIGITBITS, nullptr);
 		if (cancelf()) return;
 	}
+
 	hashdonef();
 }

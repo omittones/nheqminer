@@ -10,7 +10,7 @@
 #include <functional>
 #include <vector>
 
-DLL_PREFIX struct Solver
+struct DLL_PREFIX Solver
 {
 protected:
 	int platf_id;

@@ -56,7 +56,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>$(ProjectName)</TargetName>
     <OutDir>$(SolutionDir)$(Platform)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -73,9 +72,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>__AVX__;HAVE_STRUCT_TIMESPEC;WIN32;_DEBUG;_WINDOWS;_USRDLL;CPU_TROMP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__AVX__;HAVE_STRUCT_TIMESPEC;WIN32;_DEBUG;_WINDOWS;_LIB;CPU_TROMP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4334;4244</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\nheqminer;..\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -94,7 +93,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>__AVX__;HAVE_STRUCT_TIMESPEC;WIN32;NDEBUG;_WINDOWS;_USRDLL;CPU_TROMP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__AVX__;HAVE_STRUCT_TIMESPEC;WIN32;NDEBUG;_WINDOWS;_LIB;CPU_TROMP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4244;4334</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -118,7 +117,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>__SSE2__;HAVE_STRUCT_TIMESPEC;WIN32;NDEBUG;_WINDOWS;_USRDLL;CPU_TROMP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__SSE2__;HAVE_STRUCT_TIMESPEC;WIN32;NDEBUG;_WINDOWS;_LIB;CPU_TROMP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>4244;4334</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

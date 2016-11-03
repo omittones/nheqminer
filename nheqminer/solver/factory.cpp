@@ -53,8 +53,7 @@ std::vector<Solver*> Factory::AllocateSolvers(
 
 		for (int i = 0; i < cpu_threads; ++i)
 		{
-			auto context = new cpu_tromp();
-			context->use_opt = use_avx2;
+			auto context = new cpu_tromp(use_avx2);
 			ret.push_back(context);
 		}
 #endif

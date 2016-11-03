@@ -1,8 +1,10 @@
-#ifdef _USRDLL
-#define DLL_CPU_TROMP __declspec(dllexport)
+#ifdef _LIB
+#define DLL_PREFIX __declspec(dllexport)
 #else
-#define DLL_CPU_TROMP
+#define DLL_PREFIX
 #endif
+
+#include "solver\solver.h"
 
 #if defined(__AVX__)
 
@@ -14,24 +16,35 @@
 
 #endif
 
-struct cpu_tromp
+struct DLL_PREFIX cpu_tromp : Solver
 {
+protected:
+
+	int use_avx2;
+
+public:
+
+	cpu_tromp(bool use_avx2) : Solver(0, 0) {
+		this->use_avx2 = use_avx2;
+	}
+
 	std::string getdevinfo() { return ""; }
 
-	static void start(cpu_tromp& device_context);
+	void start();
 
-	static void stop(cpu_tromp& device_context);
+	void stop();
 
-	static void solve(const char *tequihash_header,
-		unsigned int tequihash_header_len,
+	void solve(const char *header,
+		unsigned int header_len,
 		const char* nonce,
 		unsigned int nonce_len,
 		std::function<bool()> cancelf,
 		std::function<void(const std::vector<uint32_t>&, size_t, const unsigned char*)> solutionf,
-		std::function<void(void)> hashdonef,
-		cpu_tromp& device_context);
+		std::function<void(void)> hashdonef);
 
 	std::string getname() { return CPU_TROMP_NAME; }
 
-	int use_opt;
+	int getcount();
+	
+	void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
 };
