@@ -421,3 +421,7 @@ build
 !nheqminer/libs/**
 !trompequihash/pthreads**
 !nheqminer/boost/**
+!3rdparty/**
+cpu_xenoncat/asm/xenoncatavx1.obj
+cpu_xenoncat/asm/xenoncatavx2.obj
+!cpu_xenoncat/asm/**
