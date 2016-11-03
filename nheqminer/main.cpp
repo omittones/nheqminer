@@ -6,6 +6,7 @@
 #include "streams.h"
 
 #include "libstratum/StratumClient.h"
+#include "../cuda_tromp/cuda_tromp.hpp"
 
 #include <thread>
 #include <chrono>
@@ -45,13 +46,13 @@ namespace keywords = boost::log::keywords;
 int use_avx = 0;
 int use_avx2 = 0;
 
-static ZcashStratumClientAVX* scSigAVX = nullptr;
-static ZcashStratumClientSSE2* scSigSSE2 = nullptr;
+typedef StratumClient<ZcashMiner, ZcashJob, EquihashSolution> ZcashStratumClient;
 
-extern "C" void stratum_sigint_handler(int signum) 
-{ 
-    if (scSigAVX) scSigAVX->disconnect();
-    if (scSigSSE2) scSigSSE2->disconnect();
+ZcashStratumClient* stratum_client;
+
+extern "C" void stratum_sigint_handler(int signum)
+{
+	if (stratum_client) stratum_client->disconnect();
 }
 
 void print_help()
@@ -85,10 +86,11 @@ void print_help()
 	std::cout << std::endl;
 }
 
-
 void print_cuda_info()
 {
-	int num_devices = cuda_tromp::getcount();
+	cuda_tromp solver{ 0,0 };
+
+	int num_devices = solver.getcount();
 
 	std::cout << "Number of CUDA devices found: " << num_devices << std::endl;
 
@@ -96,15 +98,16 @@ void print_cuda_info()
 	{
 		std::string gpuname, version;
 		int smcount;
-		cuda_tromp::getinfo(0, i, gpuname, smcount, version);
+		solver.getinfo(0, i, gpuname, smcount, version);
 		std::cout << "\t#" << i << " " << gpuname << " | SM version: " << version << " | SM count: " << smcount << std::endl;
 	}
 }
 
+#ifdef USE_OCL_XMP
 void print_opencl_info() {
 	open_cl_solver::print_opencl_devices();
 }
-
+#endif
 
 int cuda_enabled[8] = { 0 };
 int cuda_blocks[8] = { 0 };
@@ -148,10 +151,10 @@ void detect_AVX_and_AVX2()
 	}
 }
 
-template <typename MinerType, typename StratumType>
-void start_mining(int api_port, int cpu_threads, int cuda_device_count, int opencl_device_count, int opencl_platform,
-	const std::string& host, const std::string& port, const std::string& user, const std::string& password,
-	StratumType* handler)
+void start_mining(int api_port, int cpu_threads, 
+	int cuda_device_count, int opencl_device_count, int opencl_platform,
+	const std::string& host, const std::string& port, const std::string& user, 
+	const std::string& password, ZcashStratumClient** handler)
 {
 	std::shared_ptr<boost::asio::io_service> io_service(new boost::asio::io_service);
 
@@ -166,8 +169,13 @@ void start_mining(int api_port, int cpu_threads, int cuda_device_count, int open
 		}
 	}
 
-	MinerType miner(cpu_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled);
-	StratumType sc{
+	std::vector<Solver*> solvers;
+
+	//TODO - create solvers
+	//cpu_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled
+
+	ZcashMiner miner { solvers };
+	ZcashStratumClient sc {
 		io_service, &miner, host, port, user, password, 0, 0
 	};
 
@@ -175,7 +183,7 @@ void start_mining(int api_port, int cpu_threads, int cuda_device_count, int open
 		return sc.submit(&solution, jobid);
 	});
 
-	handler = &sc;
+	*handler = &sc;
 	signal(SIGINT, stratum_sigint_handler);
 
 	int c = 0;
@@ -290,6 +298,7 @@ int main(int argc, char* argv[])
 			}
 			break;
 		}
+#ifdef USE_OCL_XMP
 		case 'o':
 		{
 			switch (argv[i][2])
@@ -319,6 +328,7 @@ int main(int argc, char* argv[])
 			}
 			break;
 		}
+#endif
 		case 'l':
 			location = argv[++i];
 			break;
@@ -388,8 +398,12 @@ int main(int argc, char* argv[])
 	BOOST_LOG_TRIVIAL(info) << "Using AVX: " << (use_avx ? "YES" : "NO");
 	BOOST_LOG_TRIVIAL(info) << "Using AVX2: " << (use_avx2 ? "YES" : "NO");
 
+	std::vector<Solver*> solvers;
+
 	try
 	{
+		//num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled
+
 		if (!benchmark)
 		{
 			if (user.length() == 0)
@@ -402,24 +416,21 @@ int main(int argc, char* argv[])
 			std::string host = delim != std::string::npos ? location.substr(0, delim) : location;
 			std::string port = delim != std::string::npos ? location.substr(delim + 1) : "2142";
 
-			if (use_avx)
-				start_mining<ZMinerAVX, ZcashStratumClientAVX>(api_port, num_threads, cuda_device_count, opencl_device_count, opencl_platform,
-					host, port, user, password, scSigAVX);
-			else
-				start_mining<ZMinerSSE2, ZcashStratumClientSSE2>(api_port, num_threads, cuda_device_count, opencl_device_count, opencl_platform,
-					host, port, user, password, scSigSSE2);
+			start_mining(api_port, num_threads, cuda_device_count, opencl_device_count, opencl_platform,
+				host, port, user, password, &stratum_client);
 		}
 		else
 		{
-			if (use_avx)
-				ZMinerAVX::doBenchmark(num_hashes, num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled);
-			else
-				ZMinerSSE2::doBenchmark(num_hashes, num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled);
+			ZcashMiner::doBenchmark(num_hashes, solvers);
 		}
 	}
 	catch (std::runtime_error& er)
 	{
 		BOOST_LOG_TRIVIAL(error) << er.what();
+	}
+
+	for (auto it = solvers.begin(); it != solvers.end(); it++) {
+		delete *it;
 	}
 
 	boost::log::core::get()->remove_all_sinks();

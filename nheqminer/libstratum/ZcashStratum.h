@@ -6,42 +6,12 @@
 #include "arith_uint256.h"
 #include "primitives/block.h"
 #include "uint256.h"
-//#include "util.h"
-
 #include <boost/signals2.hpp>
-//#include <boost/signals.hpp>
-//#include <boost/thread.hpp>
 #include <thread>
 #include <mutex>
 
 #include "json/json_spirit_value.h"
-
-#include "SolverStub.h"
-
-#ifdef USE_CPU_TROMP
-#define __AVX__
-#include "../cpu_tromp/cpu_tromp.hpp"
-#else
-using cpu_tromp = SolverStub;
-#endif
-#ifdef USE_CPU_XENONCAT
-#include "../cpu_xenoncat/cpu_xenoncat.hpp"
-#else
-using cpu_xenoncat = SolverStub1;
-#endif
-#ifdef USE_CUDA_TROMP
-#include "../cuda_tromp/cuda_tromp.hpp"
-#else
-using cuda_tromp = SolverStub;
-#endif
-#ifdef USE_OCL_XMP
-#include "../ocl_xpm/ocl_xmp.hpp"
-#include "../ocl_xpm/ocl_silentarmy.hpp"
-using open_cl_solver = ocl_silentarmy;
-#else
-using open_cl_solver = SolverStub;
-#endif
-
+#include "../solver/solver.h"
 
 using namespace json_spirit;
 
@@ -100,31 +70,24 @@ inline bool operator==(const ZcashJob& a, const ZcashJob& b)
 
 typedef boost::signals2::signal<void (const ZcashJob*)> NewJob_t;
 
-template <typename CPUSolver, typename CUDASolver, typename OPENCLSolver>
 class ZcashMiner
 {
-    int nThreads;
+private:
+	int nThreads;
 	std::thread* minerThreads;
-    //boost::thread_group* minerThreads;
     uint256 nonce1;
     size_t nonce1Size;
     arith_uint256 nonce2Space;
     arith_uint256 nonce2Inc;
     std::function<bool(const EquihashSolution&, const std::string&)> solutionFoundCallback;
 	bool m_isActive;
-
-
-	std::vector<CPUSolver*> cpu_contexts;
-	std::vector<CUDASolver*> cuda_contexts;
-	std::vector<OPENCLSolver*> opencl_contexts;
-
+	std::vector<Solver*> solvers;
 
 public:
     NewJob_t NewJob;
 	bool* minerThreadActive;
 
-	ZcashMiner(int cpu_threads, int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t,
-		int opencl_count, int opencl_platf, int* opencl_en);
+	ZcashMiner(std::vector<Solver*> solvers);
 	~ZcashMiner();
 
     std::string userAgent();
@@ -140,15 +103,5 @@ public:
     void rejectedSolution(bool stale);
     void failedSolution();
 
-    static void doBenchmark(int hashes, int cpu_threads, int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t,
-		int opencl_count, int opencl_platf, int* opencl_en);
+	static void doBenchmark(int hashes, std::vector<Solver*> solvers);
 };
-
-typedef ZcashMiner<cpu_xenoncat, cuda_tromp, open_cl_solver> ZMinerAVX;
-typedef ZcashMiner<cpu_tromp, cuda_tromp, open_cl_solver> ZMinerSSE2;
-
-// gcc static undefined reference workaround
-void ZMinerAVX_doBenchmark(int hashes, int cpu_threads, int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t,
-                           int opencl_count, int opencl_platf, int* opencl_en);
-void ZMinerSSE2_doBenchmark(int hashes, int cpu_threads, int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t,
-                            int opencl_count, int opencl_platf, int* opencl_en);

@@ -160,8 +160,3 @@ private:
 
 	unsigned char o_index;
 };
-
-
-typedef StratumClient<ZMinerAVX, ZcashJob, EquihashSolution> ZcashStratumClientAVX;
-typedef StratumClient<ZMinerSSE2, ZcashJob, EquihashSolution> ZcashStratumClientSSE2;
-

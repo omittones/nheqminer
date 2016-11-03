@@ -167,6 +167,12 @@
     <ClInclude Include="SolverStub.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="solver\solver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="solver\factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -210,6 +216,9 @@
     </ClCompile>
     <ClCompile Include="utilstrencodings.cpp">
       <Filter>Source Files\stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="solver\factory.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

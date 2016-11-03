@@ -130,6 +130,8 @@
     <ClInclude Include="script\script.h" />
     <ClInclude Include="serialize.h" />
     <ClInclude Include="SolverStub.h" />
+    <ClInclude Include="solver\factory.h" />
+    <ClInclude Include="solver\solver.h" />
     <ClInclude Include="speed.hpp" />
     <ClInclude Include="streams.h" />
     <ClInclude Include="support\allocators\zeroafterfree.h" />
@@ -158,6 +160,7 @@
     <ClCompile Include="libstratum\ZcashStratum.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="primitives\block.cpp" />
+    <ClCompile Include="solver\factory.cpp" />
     <ClCompile Include="speed.cpp" />
     <ClCompile Include="uint256.cpp" />
     <ClCompile Include="utilstrencodings.cpp" />
