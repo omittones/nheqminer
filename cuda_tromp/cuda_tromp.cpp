@@ -10,42 +10,44 @@ struct proof;
 #include "eqcuda.hpp"
 
 
-cuda_tromp::cuda_tromp(int platf_id, int dev_id) :
-	Solver(platf_id, dev_id)
+cuda_tromp::cuda_tromp(int platf_id, int dev_id)
 {
-	getinfo(0, dev_id, m_gpu_name, m_sm_count, m_version);
+	this->dev_id = dev_id;
+	this->platf_id = platf_id;
+
+	cudaDeviceProp device_props;
+	checkCudaErrors(cudaGetDeviceProperties(&device_props, dev_id));
+
+	this->m_gpu_name = device_props.name;
+	this->m_sm_count = device_props.multiProcessorCount;
+	this->m_version = std::to_string(device_props.major) + "." + std::to_string(device_props.minor);
 
 	// todo: determine default values for various GPUs here
 	threadsperblock = 64;
 	blocks = m_sm_count * 7;
 }
 
+void cuda_tromp::getDevice(int deviceId, std::string& gpuName, int& smCount, std::string& version) {
+
+	cudaDeviceProp device_props;
+	checkCudaErrors(cudaGetDeviceProperties(&device_props, deviceId));
+
+	gpuName = device_props.name;
+	smCount = device_props.multiProcessorCount;
+	version = std::to_string(device_props.major) + "." + std::to_string(device_props.minor);
+}
+
 std::string cuda_tromp::getdevinfo()
 {
-	return m_gpu_name + " (#" + std::to_string(this->dev_id) + ") BLOCKS=" + 
+	return m_gpu_name + " (#" + std::to_string(this->dev_id) + ") BLOCKS=" +
 		std::to_string(blocks) + ", THREADS=" + std::to_string(threadsperblock);
 }
 
-
-int cuda_tromp::getcount()
+int cuda_tromp::getCount()
 {
 	int device_count;
 	checkCudaErrors(cudaGetDeviceCount(&device_count));
 	return device_count;
-}
-
-void cuda_tromp::getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version)
-{
-	//int runtime_version;
-	//checkCudaErrors(cudaRuntimeGetVersion(&runtime_version));
-
-	cudaDeviceProp device_props;
-
-	checkCudaErrors(cudaGetDeviceProperties(&device_props, d_id));
-
-	gpu_name = device_props.name;
-	sm_count = device_props.multiProcessorCount;
-	version = std::to_string(device_props.major) + "." + std::to_string(device_props.minor);
 }
 
 void cuda_tromp::start() 

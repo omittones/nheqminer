@@ -20,10 +20,10 @@ struct DLL_PREFIX cpu_tromp : Solver
 {
 public:
 
-	cpu_tromp() : Solver(0, 0) {
+	cpu_tromp() {
 	}
 
-	std::string getdevinfo() { return ""; }
+	std::string getdevinfo() { return "processor"; }
 
 	void start();
 
@@ -38,8 +38,4 @@ public:
 		std::function<void(void)> hashdonef);
 
 	std::string getname() { return CPU_TROMP_NAME; }
-
-	int getcount();
-	
-	void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
 };

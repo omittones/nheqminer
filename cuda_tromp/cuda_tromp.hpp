@@ -10,22 +10,25 @@ struct eq_cuda_context;
 
 struct DLL_PREFIX cuda_tromp : Solver
 {
-	int threadsperblock;
-	int blocks;
-	eq_cuda_context* context;
-
-	std::string getname() { return "CUDA-TROMP"; }
-
 private:
+	eq_cuda_context* context;
 	std::string m_gpu_name;
 	std::string m_version;
 	int m_sm_count;
+	int platf_id;
+	int dev_id;
 
 public:
+	
+	static int getCount();
+	static void getDevice(int deviceId, std::string& gpuName, int& smCount, std::string& version);
+
+	int threadsperblock;
+	int blocks;
+
 	cuda_tromp(int platf_id, int dev_id);
+	std::string getname() { return "CUDA-TROMP"; }
 	std::string getdevinfo();
-	int getcount();
-	void getinfo(int platf_id, int d_id, std::string & gpu_name, int & sm_count, std::string & version);
 	void start();
 	void stop();
 	void solve(

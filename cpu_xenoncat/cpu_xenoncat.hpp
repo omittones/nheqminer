@@ -14,16 +14,14 @@ private:
 
 public:
 
-	std::string getdevinfo() { return ""; }
+	std::string getdevinfo() { return "processor"; }
 
-	cpu_xenoncat(bool use_avx2) : Solver(0,0) {
+	cpu_xenoncat(bool use_avx2) {
 		this->use_avx2 = use_avx2;
 	}
 
 	void start();
 	void stop();
-	int getcount();
-	void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
 	void solve(const char *header,
 		unsigned int header_len,
 		const char* nonce,

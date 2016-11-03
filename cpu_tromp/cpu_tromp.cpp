@@ -9,13 +9,6 @@ void cpu_tromp::start() { }
 
 void cpu_tromp::stop() { }
 
-int cpu_tromp::getcount() {
-	return 0;
-}
-
-void cpu_tromp::getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version) {
-}
-
 void cpu_tromp::solve(
 	const char *header,
 	unsigned int header_len,

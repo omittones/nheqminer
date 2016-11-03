@@ -38,15 +38,6 @@ void cpu_xenoncat::stop()
 	free(this->memory_alloc);
 }
 
-int cpu_xenoncat::getcount()
-{
-	return 0;
-}
-
-void cpu_xenoncat::getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version)
-{
-}
-
 void cpu_xenoncat::solve(
 	const char *header,
 	unsigned int header_len,

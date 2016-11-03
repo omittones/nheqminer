@@ -90,9 +90,7 @@ void print_help()
 
 void print_cuda_info()
 {
-	cuda_tromp solver{ 0,0 };
-
-	int num_devices = solver.getcount();
+	int num_devices = cuda_tromp::getCount();
 
 	std::cout << "Number of CUDA devices found: " << num_devices << std::endl;
 
@@ -100,7 +98,7 @@ void print_cuda_info()
 	{
 		std::string gpuname, version;
 		int smcount;
-		solver.getinfo(0, i, gpuname, smcount, version);
+		cuda_tromp::getDevice(i, gpuname, smcount, version);
 		std::cout << "\t#" << i << " " << gpuname << " | SM version: " << version << " | SM count: " << smcount << std::endl;
 	}
 }
