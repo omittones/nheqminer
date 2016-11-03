@@ -47,6 +47,6 @@
     <ClInclude Include="cpu_xenoncat.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="xenoncat.cpp" />
+    <ClCompile Include="cpu_xenoncat.cpp" />
   </ItemGroup>
 </Project>
