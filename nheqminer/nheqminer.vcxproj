@@ -174,9 +174,6 @@
     <ProjectReference Include="..\cuda_tromp\cuda_tromp.vcxproj">
       <Project>{33c2b469-f025-4223-b9b6-e69d42fea7d6}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\logsetuplib\logsetuplib.vcxproj">
-      <Project>{33e90957-f4e3-49be-97d4-6b7ca3ff93fc}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

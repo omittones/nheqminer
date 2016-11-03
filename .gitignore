@@ -413,14 +413,17 @@ CMakeLists.txt.user*
 ####
 intermediate/**
 
+## 3rd party
+!/3rdparty/**
+/3rdparty/libs/win64/*140*
+
+## xenocat builds
+!/cpu_xenoncat/asm/**
+/cpu_xenoncat/asm/*.obj
+
+
+
 ## ignore exceptions
 !lib/**
 !inc/**
 build
-
-!nheqminer/libs/**
-!trompequihash/pthreads**
-!nheqminer/boost/**
-!3rdparty/**
-!cpu_xenoncat/asm/**
-cpu_xenoncat/asm/*.obj
