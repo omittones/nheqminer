@@ -101,4 +101,3 @@ public:
     void failedSolution();
 
 	static void doBenchmark(int hashes, std::vector<Solver*> solvers);
-};

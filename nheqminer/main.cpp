@@ -13,6 +13,8 @@
 #include "solver/solver.h"
 #include "solver/factory.h"
 
+#include "../ocl_device_utils/ocl_device_utils.h"
+
 #include <thread>
 #include <chrono>
 #include <atomic>
@@ -73,6 +75,7 @@ void print_help()
 	std::cout << std::endl;
 	std::cout << "NVIDIA CUDA settings" << std::endl;
 	std::cout << "\t-ci\t\tCUDA info" << std::endl;
+	std::cout << "\t-cv [ver]\tSet CUDA version (0 = default 8.0, 1 = 7.5)" << std::endl;
 	std::cout << "\t-cd [devices]\tEnable CUDA mining on spec. devices" << std::endl;
 	std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
 	std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
@@ -80,11 +83,13 @@ void print_help()
 	std::cout << std::endl;
 	std::cout << "OpenCL settings" << std::endl;
 	std::cout << "\t-oi\t\tOpenCL info" << std::endl;
+	std::cout << "\t-ov [ver]\tSet OpenCL solver (0 = silentarmy, 1 = xmp)" << std::endl;
 	std::cout << "\t-op [devices]\tSet OpenCL platform to selecd platform devices (-od)" << std::endl;
 	std::cout << "\t-od [devices]\tEnable OpenCL mining on spec. devices (specify plafrom number first -op)" << std::endl;
+	std::cout << "\t-ot [threads]\tSet number of threads per device" << std::endl;
 	//std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
 	//std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
-	std::cout << "Example: -op 2 -oi 0 2" << std::endl; //-cb 12 16 -ct 64 128" << std::endl;
+	std::cout << "Example: -op 2 -od 0 2" << std::endl; //-cb 12 16 -ct 64 128" << std::endl;
 	std::cout << std::endl;
 }
 
@@ -105,7 +110,7 @@ void print_cuda_info()
 
 #ifdef USE_OCL_XMP
 void print_opencl_info() {
-	open_cl_solver::print_opencl_devices();
+	ocl_device_utils::print_opencl_devices();
 }
 #endif
 
@@ -114,6 +119,7 @@ int cuda_blocks[8] = { 0 };
 int cuda_tpb[8] = { 0 };
 
 int opencl_enabled[8] = { 0 };
+int opencl_threads[8] = { 0 };
 // todo: opencl local and global worksize
 
 void start_mining(int api_port, 
@@ -180,8 +186,9 @@ int main(int argc, char* argv[])
 	std::cout << "\t==================== www.nicehash.com ====================" << std::endl;
 	std::cout << "\t\tEquihash CPU&GPU Miner for NiceHash v" STANDALONE_MINER_VERSION << std::endl;
 	std::cout << "\tThanks to Zcash developers for providing base of the code." << std::endl;
-	std::cout << "\t    Special thanks to tromp, xenoncat and eXtremal-ik7 for providing" << std::endl;
-	std::cout << "\t         optimized CPU, CUDA and AMD equihash solvers ." << std::endl;
+	std::cout << "\t       Special thanks to tromp, xenoncat, mbevand "<< std::endl;
+	std::cout << "\t             and eXtremal-ik7 for providing " << std::endl;
+	std::cout << "\t      optimized CPU, CUDA and AMD equihash solvers." << std::endl;
 	std::cout << "\t==================== www.nicehash.com ====================" << std::endl;
 	std::cout << std::endl;
 
@@ -214,6 +221,9 @@ int main(int argc, char* argv[])
 			case 'i':
 				print_cuda_info();
 				return 0;
+			case 'v':
+				use_old_cuda = atoi(argv[++i]);
+				break;
 			case 'd':
 				while (cuda_device_count < 8 && i + 1 < argc)
 				{
@@ -271,6 +281,9 @@ int main(int argc, char* argv[])
 			case 'i':
 				print_opencl_info();
 				return 0;
+			case 'v':
+				use_old_xmp = atoi(argv[++i]);
+				break;
 			case 'p':
 				opencl_platform = std::stol(argv[++i]);
 				break;
@@ -281,6 +294,21 @@ int main(int argc, char* argv[])
 					{
 						opencl_enabled[opencl_device_count] = std::stol(argv[++i]);
 						++opencl_device_count;
+					}
+					catch (...)
+					{
+						--i;
+						break;
+					}
+				}
+				break;
+			case 't':
+				while (opencl_t < 8 && i + 1 < argc)
+				{
+					try
+					{
+						opencl_threads[opencl_t] = std::stol(argv[++i]);
+						++opencl_t;
 					}
 					catch (...)
 					{

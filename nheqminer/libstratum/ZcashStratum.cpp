@@ -640,4 +640,3 @@ void ZcashMiner::doBenchmark(int hashes, std::vector<Solver*> solvers)
 	BOOST_LOG_TRIVIAL(info) << "Total solutions found: " << benchmark_solutions;
 	BOOST_LOG_TRIVIAL(info) << "Speed: " << ((double)hashes_done * 1000 / (double)msec) << " I/s";
 	BOOST_LOG_TRIVIAL(info) << "Speed: " << ((double)benchmark_solutions * 1000 / (double)msec) << " Sols/s";
-}
