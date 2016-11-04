@@ -188,8 +188,16 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos, Solver* extra
 				ss << I;
 			}
 
-			char *tequihash_header = (char *)&ss[0];
-			unsigned int tequihash_header_len = ss.size();
+			char *header = (char *)&ss[0];
+			unsigned int header_len = ss.size();
+
+			std::function<bool()> cancelFun = [&cancelSolver]() {
+				return cancelSolver.load();
+			};
+
+			std::function<void(void)> hashDone = []() {
+				speed.AddHash();
+			};
 
             // Start working
             while (true) {
@@ -226,17 +234,9 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos, Solver* extra
 					EquihashSolution solution{ bNonce, actualHeader.nSolution, actualTime, actualNonce1size };
 					miner->submitSolution(solution, actualJobId);
 				};
-
-				std::function<bool()> cancelFun = [&cancelSolver]() {
-					return cancelSolver.load();
-				};
-
-				std::function<void(void)> hashDone = []() {
-					speed.AddHash();
-				};
-
-				extra->solve(tequihash_header,
-					tequihash_header_len,
+				
+				extra->solve(header,
+					header_len,
 					(const char*)bNonce.begin(),
 					bNonce.size(),
 					cancelFun,
