@@ -1,9 +1,9 @@
 #ifdef WIN32
-
 #ifdef _LIB
 #define DLL_PREFIX __declspec(dllexport)
 #else
 #define DLL_PREFIX
+#endif
 #endif
 
 #include "solver/solver.h"

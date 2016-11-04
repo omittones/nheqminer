@@ -20,6 +20,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ocl_device_utils", "ocl_dev
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ocl_silentarmy", "ocl_silentarmy\ocl_silentarmy.vcxproj", "{AB01E715-795A-4089-8DF0-AE6EBDC1AB48}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ocl_xpm", "ocl_xpm\ocl_xpm.vcxproj", "{5EC9EDEB-8E49-4126-9161-1560683CBC71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -76,6 +78,14 @@ Global
 		{AB01E715-795A-4089-8DF0-AE6EBDC1AB48}.Release-GTX960M|x64.Build.0 = Release|x64
 		{AB01E715-795A-4089-8DF0-AE6EBDC1AB48}.Release-SSE2-GTX960M|x64.ActiveCfg = Release|x64
 		{AB01E715-795A-4089-8DF0-AE6EBDC1AB48}.Release-SSE2-GTX960M|x64.Build.0 = Release|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Debug|x64.ActiveCfg = Debug|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Debug|x64.Build.0 = Debug|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Release-GTX1060|x64.ActiveCfg = Release|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Release-GTX1060|x64.Build.0 = Release|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Release-GTX960M|x64.ActiveCfg = Release|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Release-GTX960M|x64.Build.0 = Release|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Release-SSE2-GTX960M|x64.ActiveCfg = Release|x64
+		{5EC9EDEB-8E49-4126-9161-1560683CBC71}.Release-SSE2-GTX960M|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
