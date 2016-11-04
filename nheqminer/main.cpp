@@ -188,6 +188,9 @@ int main(int argc, char* argv[])
 
 	std::cout << std::endl;
 	std::cout << "\t==================== www.nicehash.com ====================" << std::endl;
+#ifdef _DEBUG
+	std::cout << "\t====================== DEBUG VERSION =====================" << std::endl;
+#endif
 	std::cout << "\t\tEquihash CPU&GPU Miner for NiceHash v" STANDALONE_MINER_VERSION << std::endl;
 	std::cout << "\tThanks to Zcash developers for providing base of the code." << std::endl;
 	std::cout << "\t       Special thanks to tromp, xenoncat, mbevand "<< std::endl;
