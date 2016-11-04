@@ -14,7 +14,7 @@
 #ifdef USE_CUDA_TROMP
 #include "../cuda_tromp/cuda_tromp.hpp"
 #endif
-#ifdef USE_OCL_XMP
+#if defined(USE_OCL_XMP) || defined(USE_OCL_SILENTARMY)
 #include "../ocl_device_utils/ocl_device_utils.h"
 #endif
 
@@ -86,7 +86,7 @@ void print_help()
 	std::cout << "OpenCL settings" << std::endl;
 	std::cout << "\t-oi\t\tOpenCL info" << std::endl;
 	std::cout << "\t-ov [ver]\tSet OpenCL solver (0 = silentarmy, 1 = xmp)" << std::endl;
-	std::cout << "\t-op [devices]\tSet OpenCL platform to selecd platform devices (-od)" << std::endl;
+	std::cout << "\t-op [platf]\tSet OpenCL platform to selecd platform devices (-od)" << std::endl;
 	std::cout << "\t-od [devices]\tEnable OpenCL mining on spec. devices (specify plafrom number first -op)" << std::endl;
 	std::cout << "\t-ot [threads]\tSet number of threads per device" << std::endl;
 	//std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
@@ -112,7 +112,9 @@ void print_cuda_info()
 
 #ifdef USE_OCL_XMP
 void print_opencl_info() {
+#ifdef PRINT_OCL_INFO
 	ocl_device_utils::print_opencl_devices();
+#endif
 }
 #endif
 
