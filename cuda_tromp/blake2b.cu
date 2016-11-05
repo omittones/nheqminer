@@ -3,6 +3,12 @@
 // permission granted to use under MIT license
 // modified for use in Zcash by John Tromp September 2016
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+#include <stdint.h>
+#include "../cpu_tromp/blake2/blake2.h"
+#define htole32(x) (x)
+
 /**
  * uint2 direct ops by c++ operator definitions
  */
@@ -97,10 +103,10 @@ static void G(const int r, const int i, u64 &a, u64 &b, u64 &c, u64 &d, u64 cons
   G(r, 6, v[2], v[7], v[ 8], v[13], m); \
   G(r, 7, v[3], v[4], v[ 9], v[14], m);
 
-__device__ void blake2b_gpu_hash(blake2b_state *state, u32 idx, uchar *hash, const u32 outlen) {
-  const u32 leb = htole32(idx);
-  memcpy(state->buf + state->buflen, &leb, sizeof(u32));
-  state->buflen += sizeof(u32);
+__device__ void blake2b_gpu_hash(blake2b_state *state, uint32_t idx, unsigned char* hash, const uint32_t outlen) {
+  const uint32_t leb = htole32(idx);
+  memcpy(state->buf + state->buflen, &leb, sizeof(uint32_t));
+  state->buflen += sizeof(uint32_t);
   state->counter += state->buflen;
   memset(state->buf + state->buflen, 0, BLAKE2B_BLOCKBYTES - state->buflen);
 
@@ -165,5 +171,5 @@ __device__ void blake2b_gpu_hash(blake2b_state *state, u32 idx, uchar *hash, con
   state->h[6] ^= v[6] ^ v[14];
   state->h[7] ^= v[7] ^ v[15];
 
-  memcpy(hash, (uchar *)state->h, outlen);
+  memcpy(hash, state->h, outlen);
 }

@@ -1,5 +1,9 @@
+#pragma once
+
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
+#include <functional>
+#include <vector>
 
 #ifdef WIN32
 #define _SNPRINTF _snprintf

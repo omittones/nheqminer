@@ -23,9 +23,8 @@
     <ClCompile Include="cuda_tromp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="equi_miner.cu">
-      <CodeGeneration>compute_52,sm_52;compute_50,sm_50</CodeGeneration>
-    </CudaCompile>
+    <CudaCompile Include="blake2b.cu" />
+    <CudaCompile Include="equi_miner.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{33C2B469-F025-4223-B9B6-E69D42FEA7D6}</ProjectGuid>
@@ -81,7 +80,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>HAVE_STRUCT_TIMESPEC;WIN32;WIN64;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH50;HAVE_STRUCT_TIMESPEC;WIN32;WIN64;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4334;4316;4244;4996;4251;</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\nheqminer;..\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -101,6 +100,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <CodeGeneration>compute_50,sm_50</CodeGeneration>
       <PtxAsOptionV>true</PtxAsOptionV>
       <GPUDebugInfo>false</GPUDebugInfo>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Arch50|x64'">
@@ -109,7 +109,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>HAVE_STRUCT_TIMESPEC;WIN32;WIN64;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH50;HAVE_STRUCT_TIMESPEC;WIN32;WIN64;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4334;4316;4244;4996;4251;</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\nheqminer;..\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -128,6 +128,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_50,sm_50</CodeGeneration>
       <PtxAsOptionV>true</PtxAsOptionV>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Arch61|x64'">
@@ -136,7 +137,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>HAVE_STRUCT_TIMESPEC;WIN32;WIN64;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH61;HAVE_STRUCT_TIMESPEC;WIN32;WIN64;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4334;4316;4244;4996;4251;</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\nheqminer;..\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -155,6 +156,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
       <PtxAsOptionV>true</PtxAsOptionV>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

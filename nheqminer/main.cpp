@@ -396,6 +396,8 @@ int main(int argc, char* argv[])
 			std::string port = delim != std::string::npos ? location.substr(delim + 1) : "2142";
 
 			start_mining(api_port, solvers, host, port, user, password, &stratum_client);
+
+			delete stratum_client;
 		}
 		else
 		{

@@ -7,21 +7,13 @@
 #define HAVE_DECL_HTOLE32 1
 
 #include "../cpu_tromp/equi.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <functional>
-#include <vector>
-#include <iostream>
 
 #include "eqcuda.hpp"
-
-#include "blake2b.cu"
-
 
 typedef uint16_t u16;
 typedef uint64_t u64;
 
+__device__ void blake2b_gpu_hash(blake2b_state *state, uint32_t idx, unsigned char* hash, const uint32_t outlen);
 
 #ifndef RESTBITS
 #define RESTBITS	4
