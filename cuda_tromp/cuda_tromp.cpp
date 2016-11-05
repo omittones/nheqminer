@@ -26,7 +26,6 @@ cuda_tromp::cuda_tromp(int platf_id, int dev_id)
 		throw std::runtime_error("GPU does not support this CUDA version!");
 	}
 
-
 	// todo: determine default values for various GPUs here
 	threadsperblock = 64;
 	blocks = m_sm_count * 7;
