@@ -9,15 +9,11 @@
 #include <stdint.h>
 #include <assert.h>
 #include <sys/types.h>
-//#include <sys/time.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-//#include <unistd.h>
-//#include <getopt.h>
 #include <errno.h>
 
-
-#include "opencl.h"
+#include "CL/opencl.h"
 
 #include <fstream>
 
@@ -373,36 +369,36 @@ int ocl_silentarmy::getcount() { /*TODO*/
 
 void ocl_silentarmy::getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version) { /*TODO*/ }
 
-void ocl_silentarmy::start(ocl_silentarmy& device_context) {
+void ocl_silentarmy::start() {
 	/*TODO*/
-	device_context.is_init_success = false;
-	device_context.oclc = new OclContext();
+	this->is_init_success = false;
+	this->oclc = new OclContext();
 
 	std::vector<cl_device_id> allGpus;
-	if (!clInitialize(device_context.platform_id, allGpus)) {
+	if (!clInitialize(this->platform_id, allGpus)) {
 		return;
 	}
 
 	// this is kinda stupid but it works
 	std::vector<cl_device_id> gpus;
 	for (unsigned i = 0; i < allGpus.size(); ++i) {
-		if (i == device_context.device_id) {
+		if (i == this->device_id) {
 			printf("Using device %d as GPU %d\n", i, (int)gpus.size());
-			device_context.oclc->_dev_id = allGpus[i];
+			this->oclc->_dev_id = allGpus[i];
 			gpus.push_back(allGpus[i]);
 		}
 	}
 
 	if (!gpus.size()){
-		printf("Device id %d not found\n", device_context.device_id);
+		printf("Device id %d not found\n", this->device_id);
 		return;
 	}
 
 	// context create
 	for (unsigned i = 0; i < gpus.size(); i++) {
-		cl_context_properties props[] = { CL_CONTEXT_PLATFORM, (cl_context_properties)device_context.oclc->platform_id, 0 };
+		cl_context_properties props[] = { CL_CONTEXT_PLATFORM, (cl_context_properties)this->oclc->platform_id, 0 };
 		cl_int error;
-		device_context.oclc->_context = clCreateContext(NULL, 1, &gpus[i], 0, 0, &error);
+		this->oclc->_context = clCreateContext(NULL, 1, &gpus[i], 0, 0, &error);
 		//OCLR(error, false);
 		if (cl_int err = error) {
 			printf("OpenCL error: %d at %s:%d\n", err, __FILE__, __LINE__);
@@ -416,20 +412,20 @@ void ocl_silentarmy::start(ocl_silentarmy& device_context) {
 	for (size_t i = 0; i < gpus.size(); i++) {
 		char kernelName[64];
 		sprintf(kernelName, "silentarmy_gpu%u.bin", (unsigned)i);
-		if (!clCompileKernel(device_context.oclc->_context,
+		if (!clCompileKernel(this->oclc->_context,
 			gpus[i],
 			kernelName,
 			{ "zcash/gpu/kernel.cl" },
 			"",
 			&binstatus[i],
-			&device_context.oclc->_program)) {
+			&this->oclc->_program)) {
 			return;
 		}
 	}
 
 	for (unsigned i = 0; i < gpus.size(); ++i) {
 		if (binstatus[i] == CL_SUCCESS) {
-			if (!device_context.oclc->init(gpus[i], device_context.threadsNum, device_context.wokrsize)) {
+			if (!this->oclc->init(gpus[i], this->threadsNum, this->wokrsize)) {
 				printf("Init failed");
 				return;
 			}
@@ -440,28 +436,27 @@ void ocl_silentarmy::start(ocl_silentarmy& device_context) {
 		}
 	}
 
-	device_context.is_init_success = true;
+	this->is_init_success = true;
 }
 
-void ocl_silentarmy::stop(ocl_silentarmy& device_context) {
-	if (device_context.oclc != nullptr) delete device_context.oclc;
+void ocl_silentarmy::stop() {
 }
 
-void ocl_silentarmy::solve(const char *tequihash_header,
-	unsigned int tequihash_header_len,
+void ocl_silentarmy::solve(
+	const char *header,
+	unsigned int header_len,
 	const char* nonce,
 	unsigned int nonce_len,
 	std::function<bool()> cancelf,
 	std::function<void(const std::vector<uint32_t>&, size_t, const unsigned char*)> solutionf,
-	std::function<void(void)> hashdonef,
-	ocl_silentarmy& device_context) {
+	std::function<void(void)> hashdonef) {
 
 	unsigned char context[140];
 	memset(context, 0, 140);
-	memcpy(context, tequihash_header, tequihash_header_len);
-	memcpy(context + tequihash_header_len, nonce, nonce_len);
+	memcpy(context, header, header_len);
+	memcpy(context + header_len, nonce, nonce_len);
 
-	OclContext *miner = device_context.oclc;
+	OclContext *miner = this->oclc;
 	clFlush(miner->queue);
 
 	blake2b_state_t initialCtx;
@@ -471,7 +466,6 @@ void ocl_silentarmy::solve(const char *tequihash_header,
 	cl_mem buf_blake_st;
 	buf_blake_st = check_clCreateBuffer(miner->_context, CL_MEM_READ_ONLY |
 		CL_MEM_COPY_HOST_PTR, sizeof(blake2b_state_s), &initialCtx);
-
 
 	for (unsigned round = 0; round < PARAM_K; round++)
 	{
@@ -495,8 +489,10 @@ void ocl_silentarmy::solve(const char *tequihash_header,
 		check_clEnqueueNDRangeKernel(miner->queue, miner->k_rounds[round], 1, NULL,
 			&miner->global_ws, &miner->local_work_size, 0, NULL, NULL);
 		// cancel function
-		if (cancelf()) return;
+		if (cancelf())
+			return;
 	}
+
 	check_clSetKernelArg(miner->k_sols, 0, &miner->buf_ht[0]);
 	check_clSetKernelArg(miner->k_sols, 1, &miner->buf_ht[1]);
 	check_clSetKernelArg(miner->k_sols, 2, &miner->buf_sols);
@@ -529,6 +525,7 @@ void ocl_silentarmy::solve(const char *tequihash_header,
 			solutionf(std::vector<uint32_t>(0), 1344, proof);
 		}
 	}
+
 	hashdonef();
 }
 

@@ -14,8 +14,8 @@
 #ifdef USE_CUDA_TROMP
 #include "../cuda_tromp/cuda_tromp.hpp"
 #endif
-#ifdef USE_OCL_XMP
-#include "../ocl_xpm/ocl_silentarmy.hpp"
+#ifdef USE_OCL_SILENTARMY
+#include "../ocl_silentarmy/ocl_silentarmy.hpp"
 #endif
 
 void detect_AVX_and_AVX2(bool &canUseAvx1, bool &canUseAvx2)
@@ -79,8 +79,8 @@ std::vector<Solver*> Factory::AllocateSolvers(
 			context->threadsperblock = cuda_t[i];
 		ret.push_back(context);
 	}
-#endif	
-#ifdef USE_OCL_XMP
+#endif
+#ifdef USE_OCL_SILENTARMY
 	for (int i = 0; i < opencl_count; ++i)
 	{
 		auto context = new ocl_silentarmy(opencl_platf, opencl_en[i]);
@@ -107,7 +107,7 @@ std::vector<Solver*> Factory::AllocateSolvers(
 		canAvx1 = true;
 		canAvx2 = true;
 	}
-	
+
 #if USE_CPU_XENONCAT
 
 	if (forceMode == ForceMode::CPU_TROMP) {

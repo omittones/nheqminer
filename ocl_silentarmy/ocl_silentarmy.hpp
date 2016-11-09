@@ -1,9 +1,12 @@
-#pragma once
+#ifdef WIN32
 #ifdef _LIB
-#define DLL_OCL_SILENTARMY __declspec(dllexport)
+#define DLL_PREFIX __declspec(dllexport)
 #else
-#define DLL_OCL_SILENTARMY
+#define DLL_PREFIX
 #endif
+#endif
+
+#include "../nheqminer/solver/solver.h"
 
 // remove after
 #include <string>
@@ -13,46 +16,35 @@
 
 struct OclContext;
 
-
-
-struct DLL_OCL_SILENTARMY ocl_silentarmy
+struct DLL_PREFIX ocl_silentarmy : Solver
 {
-	//int threadsperblock;
-	int blocks;
-	int device_id;
-	int platform_id;
-
-	OclContext* oclc;
-	// threads
-	unsigned threadsNum; // TMP
-	unsigned wokrsize;
-
-	bool is_init_success = false;
-
-	ocl_silentarmy(int platf_id, int dev_id);
-
-	std::string getdevinfo();
-
-	static int getcount();
-
-	static void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
-
-	static void start(ocl_silentarmy& device_context);
-
-	static void stop(ocl_silentarmy& device_context);
-
-	static void solve(const char *tequihash_header,
-		unsigned int tequihash_header_len,
-		const char* nonce,
-		unsigned int nonce_len,
-		std::function<bool()> cancelf,
-		std::function<void(const std::vector<uint32_t>&, size_t, const unsigned char*)> solutionf,
-		std::function<void(void)> hashdonef,
-		ocl_silentarmy& device_context);
-
-	std::string getname() { return "OCL_SILENTARMY"; }
 
 private:
 	std::string m_gpu_name;
 	std::string m_version;
+	int blocks;
+	int device_id;
+	int platform_id;
+	OclContext* oclc;
+	unsigned threadsNum;
+	unsigned wokrsize;
+	bool is_init_success = false;
+
+public:
+	static int getcount();
+	static void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
+
+	ocl_silentarmy(int platf_id, int dev_id);
+	std::string getname() { return "OCL_SILENTARMY"; }
+	std::string getdevinfo();
+	void start();
+	void stop();
+	void solve(
+		const char *header,
+		unsigned int header_len,
+		const char* nonce,
+		unsigned int nonce_len,
+		std::function<bool()> cancelf,
+		std::function<void(const std::vector<uint32_t>&, size_t, const unsigned char*)> solutionf,
+		std::function<void(void)> hashdonef);
 };

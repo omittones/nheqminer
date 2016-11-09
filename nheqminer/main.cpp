@@ -14,7 +14,7 @@
 #ifdef USE_CUDA_TROMP
 #include "../cuda_tromp/cuda_tromp.hpp"
 #endif
-#if defined(USE_OCL_XMP) || defined(USE_OCL_SILENTARMY)
+#if defined(USE_OCL_SILENTARMY)
 #include "../ocl_device_utils/ocl_device_utils.h"
 #endif
 
@@ -110,11 +110,9 @@ void print_cuda_info()
 	}
 }
 
-#ifdef USE_OCL_XMP
+#ifdef USE_OCL_SILENTARMY
 void print_opencl_info() {
-#ifdef PRINT_OCL_INFO
 	ocl_device_utils::print_opencl_devices();
-#endif
 }
 #endif
 
@@ -126,12 +124,12 @@ int opencl_enabled[8] = { 0 };
 int opencl_threads[8] = { 0 };
 // todo: opencl local and global worksize
 
-void start_mining(int api_port, 
+void start_mining(int api_port,
 	std::vector<Solver*> solvers,
-	const std::string& host, 
-	const std::string& port, 
-	const std::string& user, 
-	const std::string& password, 
+	const std::string& host,
+	const std::string& port,
+	const std::string& user,
+	const std::string& password,
 	ZcashStratumClient** handler)
 {
 	std::shared_ptr<boost::asio::io_service> io_service(new boost::asio::io_service);
@@ -146,7 +144,7 @@ void start_mining(int api_port,
 			api = nullptr;
 		}
 	}
-	
+
 	ZcashMiner miner { solvers };
 	ZcashStratumClient sc {
 		io_service, &miner, host, port, user, password, 0, 0
@@ -169,8 +167,8 @@ void start_mining(int api_port,
 			BOOST_LOG_TRIVIAL(info) << CL_YLW "Speed [" << INTERVAL_SECONDS << " sec]: " <<
 				speed.GetHashSpeed() << " I/s, " <<
 				speed.GetSolutionSpeed() << " Sols/s" <<
-				//accepted << " AS/min, " << 
-				//(allshares - accepted) << " RS/min" 
+				//accepted << " AS/min, " <<
+				//(allshares - accepted) << " RS/min"
 				CL_N;
 		}
 		if (api) while (api->poll()) {}
@@ -277,7 +275,7 @@ int main(int argc, char* argv[])
 			break;
 		}
 #endif
-#ifdef USE_OCL_XMP
+#ifdef USE_OCL_SILENTARMY
 		case 'o':
 		{
 			switch (argv[i][2])
@@ -357,7 +355,7 @@ int main(int argc, char* argv[])
 			break;
 		}
 	}
-	
+
 	// init_logging init START
     std::cout << "Setting log level to " << log_level << std::endl;
     boost::log::add_console_log(
@@ -374,7 +372,7 @@ int main(int argc, char* argv[])
     boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
     boost::log::core::get()->add_global_attribute("ThreadID", boost::log::attributes::current_thread_id());
 	// init_logging init END
-	
+
 	auto solvers = Factory::AllocateSolvers(
 		num_threads, forceCpuExt,
 		cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb,
