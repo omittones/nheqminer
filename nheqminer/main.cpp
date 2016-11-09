@@ -105,12 +105,11 @@ void print_help()
 	std::cout << "OpenCL settings" << std::endl;
 	std::cout << "\t-oi\t\tOpenCL info" << std::endl;
 	std::cout << "\t-ov [ver]\tSet OpenCL solver (0 = silentarmy, 1 = xmp)" << std::endl;
-	std::cout << "\t-op [platf]\tSet OpenCL platform to selecd platform devices (-od)" << std::endl;
 	std::cout << "\t-od [devices]\tEnable OpenCL mining on spec. devices (specify plafrom number first -op)" << std::endl;
 	std::cout << "\t-ot [threads]\tSet number of threads per device" << std::endl;
 	//std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
 	//std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
-	std::cout << "Example: -op 2 -od 0 2" << std::endl; //-cb 12 16 -ct 64 128" << std::endl;
+	std::cout << "Example: -od 0 2" << std::endl; //-cb 12 16 -ct 64 128" << std::endl;
 	std::cout << std::endl;
 }
 
@@ -336,9 +335,6 @@ int main(int argc, char* argv[])
 				return 0;
 			case 'v':
 				use_old_xmp = atoi(argv[++i]);
-				break;
-			case 'p':
-				opencl_platform = std::stol(argv[++i]);
 				break;
 			case 'd':
 				while (opencl_device_count < 8 && i + 1 < argc)

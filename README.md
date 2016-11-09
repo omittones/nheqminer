@@ -1,3 +1,6 @@
+# Donation
+If you like what im doing consider donating BTC to 18KXbLfgVt9zLxEuboPCmjpuvLL7VtjPhm
+
 # Build instructions:
 
 ### Dependencies:
@@ -30,7 +33,7 @@ Working solvers CPU_TROMP, CPU_XENONCAT, CUDA_TROMP, OCL_XMP, OCL_SILENTARMY
    - `git clone -b Linux https://github.com/nicehash/nheqminer.git`
    - `cd nheqminer/cpu_xenoncat/Linux/asm/`
    - `sh assemble.sh`
-   - `cd ../../../Linux_cmake/nheqminer_cpu`
+   - `cd ../../../Linux_cmake/nheqminer_cpu_xenoncat`
    - `cmake .`
    - `make -j $(nproc)`
 
