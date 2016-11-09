@@ -105,7 +105,7 @@ bool OclContext::init(
 	k_init_ht = clCreateKernel(_program, "kernel_init_ht", &error);
 	for (unsigned i = 0; i < WK; i++) {
 		char kernelName[128];
-		sprintf(kernelName, "kernel_round%d", i);
+		sprintf_s(kernelName, sizeof(kernelName), "kernel_round%d", i);
 		k_rounds[i] = clCreateKernel(_program, kernelName, &error);
 	}
 
@@ -176,7 +176,7 @@ char *s_hexdump(const void *_a, uint32_t a_len)
 	static char		buf[1024];
 	uint32_t		i;
 	for (i = 0; i < a_len && i + 2 < sizeof(buf); i++)
-		sprintf(buf + i * 2, "%02x", a[i]);
+		sprintf_s(buf + i * 2, 2, "%02x", a[i]);
 	buf[i * 2] = 0;
 	return buf;
 }
@@ -363,11 +363,18 @@ std::string ocl_silentarmy::getdevinfo() {
 }
 
 // STATICS START
-int ocl_silentarmy::getcount() { /*TODO*/
+int ocl_silentarmy::getcount() { 
+	/*TODO*/
 	return 0;
 }
 
-void ocl_silentarmy::getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version) { /*TODO*/ }
+void ocl_silentarmy::getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version) {
+	/*TODO*/ 
+}
+
+void ocl_silentarmy::printInfo() {
+	/*TODO*/
+}
 
 void ocl_silentarmy::start() {
 	/*TODO*/
@@ -375,10 +382,14 @@ void ocl_silentarmy::start() {
 	this->oclc = new OclContext();
 
 	std::vector<cl_device_id> allGpus;
+
+	//TODO - fix this
+	/*
 	if (!clInitialize(this->platform_id, allGpus)) {
 		return;
-	}
-
+	}*/
+	return;
+	
 	// this is kinda stupid but it works
 	std::vector<cl_device_id> gpus;
 	for (unsigned i = 0; i < allGpus.size(); ++i) {
@@ -411,8 +422,12 @@ void ocl_silentarmy::start() {
 
 	for (size_t i = 0; i < gpus.size(); i++) {
 		char kernelName[64];
-		sprintf(kernelName, "silentarmy_gpu%u.bin", (unsigned)i);
-		if (!clCompileKernel(this->oclc->_context,
+		sprintf_s(kernelName, sizeof(kernelName), "silentarmy_gpu%u.bin", (unsigned)i);
+		
+		return;
+		
+		//TODO - fix this
+		/*if (!clCompileKernel(this->oclc->_context,
 			gpus[i],
 			kernelName,
 			{ "zcash/gpu/kernel.cl" },
@@ -420,7 +435,7 @@ void ocl_silentarmy::start() {
 			&binstatus[i],
 			&this->oclc->_program)) {
 			return;
-		}
+		}*/
 	}
 
 	for (unsigned i = 0; i < gpus.size(); ++i) {

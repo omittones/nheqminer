@@ -15,7 +15,7 @@
 #include "../cuda_tromp/cuda_tromp.hpp"
 #endif
 #if defined(USE_OCL_SILENTARMY)
-#include "../ocl_device_utils/ocl_device_utils.h"
+#include "../ocl_silentarmy/ocl_silentarmy.hpp"
 #endif
 
 #include <thread>
@@ -109,12 +109,6 @@ void print_cuda_info()
 		std::cout << "\t#" << i << " " << gpuname << " | SM version: " << version << " | SM count: " << smcount << std::endl;
 	}
 }
-
-#ifdef USE_OCL_SILENTARMY
-void print_opencl_info() {
-	ocl_device_utils::print_opencl_devices();
-}
-#endif
 
 int cuda_enabled[8] = { 0 };
 int cuda_blocks[8] = { 0 };
@@ -210,6 +204,7 @@ int main(int argc, char* argv[])
 	int cuda_tbpc = 0;
 	int opencl_platform = 0;
 	int opencl_device_count = 0;
+	int opencl_t = 0;
 	ForceMode forceCpuExt = ForceMode::NONE;
 
 	for (int i = 1; i < argc; ++i)
@@ -281,11 +276,8 @@ int main(int argc, char* argv[])
 			switch (argv[i][2])
 			{
 			case 'i':
-				print_opencl_info();
+				ocl_silentarmy::printInfo();
 				return 0;
-			case 'v':
-				use_old_xmp = atoi(argv[++i]);
-				break;
 			case 'p':
 				opencl_platform = std::stol(argv[++i]);
 				break;

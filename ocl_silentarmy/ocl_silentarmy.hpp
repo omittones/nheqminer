@@ -20,8 +20,6 @@ struct DLL_PREFIX ocl_silentarmy : Solver
 {
 
 private:
-	std::string m_gpu_name;
-	std::string m_version;
 	int blocks;
 	int device_id;
 	int platform_id;
@@ -32,6 +30,7 @@ private:
 
 public:
 	static int getcount();
+	static void printInfo();
 	static void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
 
 	ocl_silentarmy(int platf_id, int dev_id);
