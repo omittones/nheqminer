@@ -6,7 +6,7 @@
 #endif
 #endif
 
-#include "../nheqminer/solver/solver.h"
+#include "solver/solver.h"
 
 // remove after
 #include <string>
