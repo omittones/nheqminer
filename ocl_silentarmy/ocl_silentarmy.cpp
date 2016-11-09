@@ -17,12 +17,13 @@
 
 #include <fstream>
 
-#include "sa_blake.h"
+#include "remote/blake.hpp"
 
 typedef uint8_t		uchar;
 typedef uint32_t	uint;
 typedef uint64_t	ulong;
-#include "param.h"
+
+#include "remote/param.h"
 
 #define MIN(A, B)	(((A) < (B)) ? (A) : (B))
 #define MAX(A, B)	(((A) > (B)) ? (A) : (B))

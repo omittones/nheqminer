@@ -12,14 +12,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ocl_silentarmy.cpp" />
-    <ClCompile Include="sa_blake.cpp" />
+    <ClCompile Include="remote\blake.cpp" />
+    <ClCompile Include="remote\main.c" />
+    <ClCompile Include="remote\sha256.c" />
+    <ClCompile Include="remote\windows\getopt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ocl_silentarmy.hpp" />
-    <ClInclude Include="param.h" />
-    <ClInclude Include="sa_blake.h" />
+    <ClInclude Include="remote\blake.hpp" />
+    <ClInclude Include="remote\param.h" />
+    <ClInclude Include="remote\sha256.h" />
+    <ClInclude Include="remote\windows\getopt.h" />
+    <ClInclude Include="remote\windows\gettimeofday.h" />
+    <ClInclude Include="remote\windows\memrchr.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="remote\input.cl" />
     <None Include="zcash\gpu\input.cl" />
     <None Include="zcash\gpu\kernel.cl" />
   </ItemGroup>

@@ -2,12 +2,35 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="ocl_silentarmy.cpp" />
-    <ClCompile Include="sa_blake.cpp" />
+    <ClCompile Include="remote\sha256.c">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\main.c">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\blake.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
+    <ClCompile Include="remote\windows\getopt.cpp">
+      <Filter>remote</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ocl_silentarmy.hpp" />
-    <ClInclude Include="param.h" />
-    <ClInclude Include="sa_blake.h" />
+    <ClInclude Include="remote\param.h" />
+    <ClInclude Include="remote\windows\memrchr.h" />
+    <ClInclude Include="remote\windows\getopt.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\windows\gettimeofday.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\sha256.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\blake.hpp">
+      <Filter>remote</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="zcash">
@@ -16,6 +39,9 @@
     <Filter Include="zcash\gpu">
       <UniqueIdentifier>{c7687099-e206-4d36-8836-f7032bffc7da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="remote">
+      <UniqueIdentifier>{d2e89690-cc99-4701-92e4-5c2d82dde617}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="zcash\gpu\input.cl">
@@ -23,6 +49,9 @@
     </None>
     <None Include="zcash\gpu\kernel.cl">
       <Filter>zcash\gpu</Filter>
+    </None>
+    <None Include="remote\input.cl">
+      <Filter>remote</Filter>
     </None>
   </ItemGroup>
 </Project>
