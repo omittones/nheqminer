@@ -476,17 +476,17 @@ void ocl_silentarmy::solve(const char *tequihash_header,
 	for (unsigned round = 0; round < PARAM_K; round++)
 	{
 		if (round < 2)
-			init_ht(miner->queue, miner->k_init_ht, miner->buf_ht[round % 2]);
+			init_ht(miner->queue, miner->k_init_ht, miner->buf_ht[round & 1]);
 		if (!round)
 		{
 			check_clSetKernelArg(miner->k_rounds[round], 0, &buf_blake_st);
-			check_clSetKernelArg(miner->k_rounds[round], 1, &miner->buf_ht[round % 2]);
+			check_clSetKernelArg(miner->k_rounds[round], 1, &miner->buf_ht[round & 1]);
 			miner->global_ws = select_work_size_blake();
 		}
 		else
 		{
-			check_clSetKernelArg(miner->k_rounds[round], 0, &miner->buf_ht[(round - 1) % 2]);
-			check_clSetKernelArg(miner->k_rounds[round], 1, &miner->buf_ht[round % 2]);
+			check_clSetKernelArg(miner->k_rounds[round], 0, &miner->buf_ht[(round - 1) & 1]);
+			check_clSetKernelArg(miner->k_rounds[round], 1, &miner->buf_ht[round & 1]);
 			miner->global_ws = NR_ROWS;
 		}
 		check_clSetKernelArg(miner->k_rounds[round], 2, &miner->buf_dbg);
