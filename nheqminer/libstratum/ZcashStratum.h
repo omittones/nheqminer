@@ -13,6 +13,8 @@
 #include "json/json_spirit_value.h"
 #include "../solver/solver.h"
 
+#include "../cuda_silentarmy/cuda_silentarmy.hpp"
+
 using namespace json_spirit;
 
 struct EquihashSolution

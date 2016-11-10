@@ -79,6 +79,7 @@ void print_help()
 	std::cout << "NVIDIA CUDA settings" << std::endl;
 	std::cout << "\t-ci\t\tCUDA info" << std::endl;
 	std::cout << "\t-cd [devices]\tEnable CUDA mining on spec. devices" << std::endl;
+	std::cout << "\t-cs\tUse Silentarmy Solver" << std::endl;
 	std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
 	std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
 	std::cout << "Example: -cd 0 2 -cb 12 16 -ct 64 128" << std::endl;
@@ -98,8 +99,7 @@ void print_cuda_info()
 
 	std::cout << "Number of CUDA devices found: " << num_devices << std::endl;
 
-	for (int i = 0; i < num_devices; ++i)
-	{
+	for (int i = 0; i < num_devices; ++i) {
 		std::string gpuname, version;
 		int smcount;
 		cuda_tromp::getDevice(i, gpuname, smcount, version);
@@ -213,6 +213,9 @@ int main(int argc, char* argv[])
 		{
 			switch (argv[i][2])
 			{
+			case 's':
+				use_cuda_sa = 1;
+				break;
 			case 'i':
 				print_cuda_info();
 				return 0;

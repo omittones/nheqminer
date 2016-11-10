@@ -20,9 +20,10 @@ do {														\
         _SNPRINTF(errorBuff, sizeof(errorBuff) - 1,			\
 			"CUDA error '%s' in func '%s' line %d",			\
 			cudaGetErrorString(err), __FUNCTION__, __LINE__);	\
-		throw std::runtime_error(errorBuff);				\
+			fprintf(stderr, "%s\n", errorBuff);\
 		}														\
 } while (0)
+//throw std::runtime_error(errorBuff);				\
 
 struct equi;
 
