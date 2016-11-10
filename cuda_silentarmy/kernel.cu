@@ -33,8 +33,8 @@ typedef struct sols_s
 {
 	uint nr;
 	uint likely_invalids;
-	uchar valid[2000];
-	uint values[2000][(1 << 9)];
+	uchar valid[MAX_SOLS];
+	uint values[MAX_SOLS][(1 << PARAM_K)];
 } sols_t;
 
 __constant__ ulong blake_iv[] =
@@ -495,23 +495,32 @@ __device__ uint expand_ref(char *ht, uint xi_offset, uint row, uint slot)
 	return *(uint *)(ht + row * ((1 << (((200 / (9 + 1)) + 1) - 20)) * 6) * 32 + slot * 32 + xi_offset - 4);
 }
 
-__device__ void expand_refs(uint *ins, uint nr_inputs, char **htabs, uint round)
+__device__ uint expand_refs(uint *ins, uint nr_inputs, char **htabs, uint round)
 {
 	char *ht = htabs[round & 1];
 	uint i = nr_inputs - 1;
 	uint j = nr_inputs * 2 - 1;
 	uint xi_offset = (8 + ((round) / 2) * 4);
+	int dup_to_watch = -1;
 	do
 	{
 		ins[j] = expand_ref(ht, xi_offset,
 			(ins[i] >> 12), ((ins[i] >> 6) & 0x3f));
 		ins[j - 1] = expand_ref(ht, xi_offset,
 			(ins[i] >> 12), (ins[i] & 0x3f));
+		if (!round) {
+			if (dup_to_watch == -1) {
+				dup_to_watch = ins[j];
+			} else if (ins[j] == dup_to_watch || ins[j - 1] == dup_to_watch) {
+				return 0;
+			}
+		}
 		if (!i)
 			break;
 		i--;
 		j -= 2;
 	} while (1);
+	return 1;
 }
 
 /*
@@ -519,22 +528,30 @@ __device__ void expand_refs(uint *ins, uint nr_inputs, char **htabs, uint round)
 */
 __device__ void potential_sol(char **htabs, sols_t *sols, uint ref0, uint ref1)
 {
-	uint	sol_i;
 	uint	nr_values;
-	sol_i = atomicAdd(&sols->nr, 1);
-	if (sol_i >= 2000)
-		return;
-	sols->valid[sol_i] = 0;
+	uint	values_tmp[(1 << PARAM_K)];
+	uint	sol_i;
+	uint	i;
 	nr_values = 0;
-	sols->values[sol_i][nr_values++] = ref0;
-	sols->values[sol_i][nr_values++] = ref1;
-	uint round = 9 - 1;
+	values_tmp[nr_values++] = ref0;
+	values_tmp[nr_values++] = ref1;
+	uint round = PARAM_K - 1;
 	do
 	{
 		round--;
-		expand_refs(&(sols->values[sol_i][0]), nr_values, htabs, round);
+		if (!expand_refs(values_tmp, nr_values, htabs, round)) {
+			return;
+		}
 		nr_values *= 2;
 	} while (round > 0);
+	//solution looks valid
+	sol_i = atomicAdd(&sols->nr, 1);
+	if (sol_i >= MAX_SOLS) {
+		return;
+	}
+	for (i = 0; i < (1 << PARAM_K); i++) {
+		sols->values[sol_i][i] = values_tmp[i];
+	}
 	sols->valid[sol_i] = 1;
 }
 
