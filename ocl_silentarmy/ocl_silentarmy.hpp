@@ -20,13 +20,15 @@ struct DLL_PREFIX ocl_silentarmy : Solver
 {
 
 private:
-	int gpu_id;
+	void* devId;
+	std::string devName;
+	size_t noThreadsPerBlock;
 	solver_context_t* ctx;
 
 public:
 	static void printInfo();
 
-	ocl_silentarmy(int gpu_id);
+	ocl_silentarmy(int gpuId, size_t noThreadsPerBlock);
 	virtual ~ocl_silentarmy();
 
 	std::string getname() { return "OCL_SILENTARMY"; }

@@ -23,9 +23,17 @@
 #define PROOFSIZE (1u<<PARAM_K)
 #define COMPRESSED_PROOFSIZE ((COLLISION_BIT_LENGTH+1)*PROOFSIZE*4/(8*sizeof(uint32_t)))
 
-ocl_silentarmy::ocl_silentarmy(int gpu_id) :
-	gpu_id(gpu_id) {
+ocl_silentarmy::ocl_silentarmy(int gpuId, size_t noThreadsPerBlock) :
+	noThreadsPerBlock(noThreadsPerBlock) {
+
 	this->ctx = nullptr;
+
+	auto plats = scan_platforms();
+	if (plats.size() <= gpuId)
+		fatal("Unknown gpu id!");
+
+	devId = plats[gpuId].devId;
+	devName = plats[gpuId].name;
 }
 
 ocl_silentarmy::~ocl_silentarmy() {
@@ -33,11 +41,15 @@ ocl_silentarmy::~ocl_silentarmy() {
 }
 
 std::string ocl_silentarmy::getdevinfo() {
-	return "GPU_ID(" + std::to_string(this->gpu_id) + ")";
+	return "GPU_ID(" + devName + ")";
 }
 
 void ocl_silentarmy::printInfo() {
-	scan_platforms(-1, NULL, NULL);
+	printf("Listing OpenCL supported devices: \n");
+	auto plats = scan_platforms();
+	for (auto i = 0; i < plats.size(); i++) {
+		printf("    %d. %s", i, plats[i].name.c_str());
+	}
 }
 
 void ocl_silentarmy::start() {
@@ -46,8 +58,8 @@ void ocl_silentarmy::start() {
 		throw std::exception("Solver already started!");
 
 	this->ctx = new solver_context_t();
-
-	setup_context(*this->ctx, gpu_id);
+	
+	setup_context(*this->ctx, (cl_device_id) devId);
 }
 
 void ocl_silentarmy::stop() {
@@ -125,7 +137,7 @@ void ocl_silentarmy::solve(
 	if (cancelf())
 		return;
 
-	auto sols = solve_equihash(*miner, context, ZCASH_BLOCK_HEADER_LEN);
+	auto sols = solve_equihash(*miner, this->noThreadsPerBlock, context, ZCASH_BLOCK_HEADER_LEN);
 
 	uint8_t proof[COMPRESSED_PROOFSIZE * 2];
 	uint32_t noValidSols = 0;

@@ -88,9 +88,7 @@ void print_help()
 	std::cout << "\t-ov [ver]\tSet OpenCL solver (0 = silentarmy, 1 = xmp)" << std::endl;
 	std::cout << "\t-od [devices]\tEnable OpenCL mining on spec. devices" << std::endl;
 	std::cout << "\t-ot [threads]\tSet number of threads per device" << std::endl;
-	//std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
-	//std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
-	std::cout << "Example: -op 2 -od 0 2" << std::endl; //-cb 12 16 -ct 64 128" << std::endl;
+	std::cout << "Example: -od 1 2 -ot 32 32" << std::endl;
 	std::cout << std::endl;
 }
 
@@ -115,7 +113,6 @@ int cuda_tpb[8] = { 0 };
 
 int opencl_enabled[8] = { 0 };
 int opencl_threads[8] = { 0 };
-// todo: opencl local and global worksize
 
 void start_mining(int api_port,
 	std::vector<Solver*> solvers,
@@ -282,6 +279,7 @@ int main(int argc, char* argv[])
 					try
 					{
 						opencl_enabled[opencl_device_count] = std::stol(argv[++i]);
+						opencl_threads[opencl_device_count] = 64;
 						++opencl_device_count;
 					}
 					catch (...)
@@ -363,7 +361,7 @@ int main(int argc, char* argv[])
 	auto solvers = Factory::AllocateSolvers(
 		num_threads, forceCpuExt,
 		cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb,
-		opencl_device_count, opencl_enabled);
+		opencl_device_count, opencl_enabled, opencl_threads);
 
 	try
 	{
