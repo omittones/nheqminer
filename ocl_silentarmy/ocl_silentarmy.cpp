@@ -138,11 +138,13 @@ void ocl_silentarmy::solve(
 		}
 
 		if (cancelf())
-			return;
+			break;
 	}
 
 	debug("Nonce %s: %d sol%s\n", s_hexdump(nonce, nonce_len), noValidSols, noValidSols == 1 ? "" : "s");
 	debug("Stats: %d likely invalids\n", sols->likely_invalids);
+
+	free(sols);
 
 	hashdonef();
 }
