@@ -460,6 +460,8 @@ void ocl_silentarmy::start(ocl_silentarmy& device_context) {
 	device_context.is_init_success = true;
 }
 
+#include <iostream>
+
 void ocl_silentarmy::stop(ocl_silentarmy& device_context) {
 	if (device_context.oclc != nullptr) delete device_context.oclc;
 }
@@ -492,8 +494,9 @@ void ocl_silentarmy::solve(const char *tequihash_header,
 
 	for (unsigned round = 0; round < PARAM_K; round++)
 	{
-		if (round < 2)
+		if (round < 2) {
 			init_ht(miner->queue, miner->k_init_ht, miner->buf_ht[round & 1]);
+		}
 		if (!round)
 		{
 			check_clSetKernelArg(miner->k_rounds[round], 0, &buf_blake_st);

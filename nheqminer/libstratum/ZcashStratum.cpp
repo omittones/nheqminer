@@ -874,4 +874,8 @@ void ZMinerSSE2CUDA75_SA_doBenchmark(int hashes, int cpu_threads, int cuda_count
     int opencl_count, int opencl_platf, int* opencl_en, int* opencl_t) {
     ZMinerSSE2CUDA75_SA::doBenchmark(hashes, cpu_threads, cuda_count, cuda_en, cuda_b, cuda_t, opencl_count, opencl_platf, opencl_en, opencl_t);
 }
+void ZMinerAVXCUDASA80_SA_doBenchmark(int hashes, int cpu_threads, int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t,
+	int opencl_count, int opencl_platf, int* opencl_en, int* opencl_t) {
+	ZMinerAVXCUDASA80_SA::doBenchmark(hashes, cpu_threads, cuda_count, cuda_en, cuda_b, cuda_t, opencl_count, opencl_platf, opencl_en, opencl_t);
+}
 

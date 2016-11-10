@@ -174,7 +174,7 @@ struct htalloc {
 
 typedef u32 bsizes[NBUCKETS];
 
-struct equi {
+struct __align__(64) equi {
 	blake2b_state blake_ctx;
 	htalloc hta;
 	bsizes *nslots;
@@ -183,6 +183,13 @@ struct equi {
 	u32 nthreads;
 	equi(const u32 n_threads) {
 		nthreads = n_threads;
+	}
+	void* operator new(size_t i)
+	{
+		return _mm_malloc(i, 64);
+	}
+	void operator delete(void* p) {
+		_mm_free(p);
 	}
 	void setheadernonce(const char *header, const u32 len, const char* nonce, const u32 nlen) {
 		setheader(&blake_ctx, header, len, nonce, nlen);
@@ -905,6 +912,8 @@ __global__ void digitK(equi *eq) {
 }
 
 
+
+
 eq_cuda_context::eq_cuda_context(int tpb, int blocks, int id)
 	: threadsperblock(tpb), totalblocks(blocks), device_id(id)
 {
@@ -987,6 +996,8 @@ void eq_cuda_context::solve(const char *tequihash_header,
 
 	checkCudaErrors(cudaMemcpy(eq, device_eq, sizeof(equi), cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(solutions, eq->sols, MAXSOLS * sizeof(proof), cudaMemcpyDeviceToHost));
+
+	printf("cuda solved %d\n", eq->nsols);
 
 	for (unsigned s = 0; (s < eq->nsols) && (s < MAXSOLS); s++)
 	{

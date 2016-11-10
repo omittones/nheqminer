@@ -51,6 +51,7 @@ int use_avx = 0;
 int use_avx2 = 0;
 int use_old_cuda = 1;
 int use_old_xmp = 0;
+int use_cuda_sa = 0;
 
 // _XMP
 static ZcashStratumClientAVXCUDA80_XMP* scSigAVXC80_XMP = nullptr;
@@ -98,6 +99,7 @@ void print_help()
 	std::cout << "\t-ci\t\tCUDA info" << std::endl;
 	std::cout << "\t-cv [ver]\tSet CUDA version (0 = 8.0, 1 = 7.5)" << std::endl;
 	std::cout << "\t-cd [devices]\tEnable CUDA mining on spec. devices" << std::endl;
+	std::cout << "\t-cs\tUse Silentarmy Solver" << std::endl;
 	std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
 	std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
 	std::cout << "Example: -cd 0 2 -cb 12 16 -ct 64 128" << std::endl;
@@ -120,8 +122,7 @@ void print_cuda_info()
 
 	std::cout << "Number of CUDA devices found: " << num_devices << std::endl;
 
-	for (int i = 0; i < num_devices; ++i)
-	{
+	for (int i = 0; i < num_devices; ++i) {
 		std::string gpuname, version;
 		int smcount;
 		cuda_tromp::getinfo(0, i, gpuname, smcount, version);
@@ -272,6 +273,9 @@ int main(int argc, char* argv[])
 		{
 			switch (argv[i][2])
 			{
+			case 's':
+				use_cuda_sa = 1;
+				break;
 			case 'i':
 				print_cuda_info();
 				return 0;
@@ -531,10 +535,13 @@ int main(int argc, char* argv[])
 			else { // sarmy
 				if (use_avx)
 				{
-					if (use_old_cuda)
-                        ZMinerAVXCUDA75_SA_doBenchmark(num_hashes, num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled, opencl_threads);
-					else
-                        ZMinerAVXCUDA80_SA_doBenchmark(num_hashes, num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled, opencl_threads);
+					if (use_cuda_sa) {
+						ZMinerAVXCUDASA80_SA_doBenchmark(num_hashes, num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled, opencl_threads);
+					} else if (use_old_cuda) {
+						ZMinerAVXCUDA75_SA_doBenchmark(num_hashes, num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled, opencl_threads);
+					} else {
+						ZMinerAVXCUDA80_SA_doBenchmark(num_hashes, num_threads, cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, opencl_device_count, opencl_platform, opencl_enabled, opencl_threads);
+					}
 				}
 				else
 				{
