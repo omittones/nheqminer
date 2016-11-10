@@ -40,8 +40,8 @@ struct eq_cuda_context
 	eq_cuda_context(int tpb, int blocks, int id);
 	~eq_cuda_context();
 
-	void solve(const char *tequihash_header,
-		unsigned int tequihash_header_len,
+	void solve(const char *header,
+		unsigned int header_len,
 		const char* nonce,
 		unsigned int nonce_len,
 		std::function<bool()> cancelf,

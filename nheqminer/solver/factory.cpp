@@ -58,7 +58,7 @@ void detect_AVX_and_AVX2(bool &canUseAvx1, bool &canUseAvx2)
 std::vector<Solver*> Factory::AllocateSolvers(
 	int cpu_threads, ForceMode forceMode,
 	int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t,
-	int opencl_count, int opencl_platf, int* opencl_en) {
+	int opencl_count, int* opencl_en) {
 
 	std::vector<Solver*> ret;
 
@@ -83,7 +83,7 @@ std::vector<Solver*> Factory::AllocateSolvers(
 #ifdef USE_OCL_SILENTARMY
 	for (int i = 0; i < opencl_count; ++i)
 	{
-		auto context = new ocl_silentarmy(opencl_platf, opencl_en[i]);
+		auto context = new ocl_silentarmy(opencl_en[i]);
 		// todo: save local&global work size
 		ret.push_back(context);
 	}

@@ -9,7 +9,6 @@
 struct proof;
 #include "eqcuda.hpp"
 
-
 cuda_tromp::cuda_tromp(int platf_id, int dev_id)
 {
 	this->dev_id = dev_id;

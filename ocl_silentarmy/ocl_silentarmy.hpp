@@ -14,26 +14,21 @@
 #include <vector>
 #include <cstdint>
 
-struct OclContext;
+struct solver_context_t;
 
 struct DLL_PREFIX ocl_silentarmy : Solver
 {
 
 private:
-	int blocks;
-	int device_id;
-	int platform_id;
-	OclContext* oclc;
-	unsigned threadsNum;
-	unsigned wokrsize;
-	bool is_init_success = false;
+	int gpu_id;
+	solver_context_t* ctx;
 
 public:
-	static int getcount();
 	static void printInfo();
-	static void getinfo(int platf_id, int d_id, std::string& gpu_name, int& sm_count, std::string& version);
 
-	ocl_silentarmy(int platf_id, int dev_id);
+	ocl_silentarmy(int gpu_id);
+	virtual ~ocl_silentarmy();
+
 	std::string getname() { return "OCL_SILENTARMY"; }
 	std::string getdevinfo();
 	void start();

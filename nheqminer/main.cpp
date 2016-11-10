@@ -86,8 +86,7 @@ void print_help()
 	std::cout << "OpenCL settings" << std::endl;
 	std::cout << "\t-oi\t\tOpenCL info" << std::endl;
 	std::cout << "\t-ov [ver]\tSet OpenCL solver (0 = silentarmy, 1 = xmp)" << std::endl;
-	std::cout << "\t-op [platf]\tSet OpenCL platform to selecd platform devices (-od)" << std::endl;
-	std::cout << "\t-od [devices]\tEnable OpenCL mining on spec. devices (specify plafrom number first -op)" << std::endl;
+	std::cout << "\t-od [devices]\tEnable OpenCL mining on spec. devices" << std::endl;
 	std::cout << "\t-ot [threads]\tSet number of threads per device" << std::endl;
 	//std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
 	//std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
@@ -202,7 +201,6 @@ int main(int argc, char* argv[])
 	int cuda_device_count = 0;
 	int cuda_bc = 0;
 	int cuda_tbpc = 0;
-	int opencl_platform = 0;
 	int opencl_device_count = 0;
 	int opencl_t = 0;
 	ForceMode forceCpuExt = ForceMode::NONE;
@@ -278,9 +276,6 @@ int main(int argc, char* argv[])
 			case 'i':
 				ocl_silentarmy::printInfo();
 				return 0;
-			case 'p':
-				opencl_platform = std::stol(argv[++i]);
-				break;
 			case 'd':
 				while (opencl_device_count < 8 && i + 1 < argc)
 				{
@@ -368,8 +363,7 @@ int main(int argc, char* argv[])
 	auto solvers = Factory::AllocateSolvers(
 		num_threads, forceCpuExt,
 		cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb,
-		opencl_device_count, opencl_platform, opencl_enabled
-	);
+		opencl_device_count, opencl_enabled);
 
 	try
 	{
