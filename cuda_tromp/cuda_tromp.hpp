@@ -8,14 +8,6 @@
 
 #include "solver/solver.h"
 
-#ifdef ARCH50
-#define CUDAARCH 50
-#elif ARCH61
-#define CUDAARCH 61
-#else
-#define CUDAARCH 0
-#endif
-
 struct eq_cuda_context;
 
 struct DLL_PREFIX cuda_tromp : Solver

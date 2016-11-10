@@ -21,7 +21,7 @@ cuda_tromp::cuda_tromp(int platf_id, int dev_id)
 	this->m_sm_count = device_props.multiProcessorCount;
 	this->m_version = std::to_string(device_props.major) + "." + std::to_string(device_props.minor);
 
-	if (CUDAARCH > device_props.major * 10 + device_props.minor) {
+	if (50 > device_props.major * 10 + device_props.minor) {
 		throw std::runtime_error("GPU does not support this CUDA version!");
 	}
 

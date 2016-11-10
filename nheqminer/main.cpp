@@ -200,6 +200,7 @@ int main(int argc, char* argv[])
 	int cuda_tbpc = 0;
 	int opencl_device_count = 0;
 	int opencl_t = 0;
+	bool use_cuda_sa = false;
 	ForceMode forceCpuExt = ForceMode::NONE;
 
 	for (int i = 1; i < argc; ++i)
@@ -214,7 +215,7 @@ int main(int argc, char* argv[])
 			switch (argv[i][2])
 			{
 			case 's':
-				use_cuda_sa = 1;
+				use_cuda_sa = true;
 				break;
 			case 'i':
 				print_cuda_info();
