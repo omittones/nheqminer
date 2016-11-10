@@ -561,7 +561,7 @@ void kernel_sols(char *ht0, char *ht1, sols_t *sols)
 	uint ran = 0;
 	for (uint ii = tid; ii < (uint)NR_ROWS; ii += (blockDim.x * gridDim.x)) {
 		ran++;
-		ulong		collisions[5];
+		ulong		collisions[1];
 		a = htabs[ht_i] + ii * NR_SLOTS * SLOT_LEN;
 		cnt = *(uint *)a;
 		cnt = min(cnt, (uint)NR_SLOTS); // handle possible overflow in last round

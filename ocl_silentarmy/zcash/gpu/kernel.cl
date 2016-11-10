@@ -579,7 +579,7 @@ void kernel_sols(__global char *ht0, __global char *ht1, __global sols_t *sols)
     uint		ref_i, ref_j;
     // it's ok for the collisions array to be so small, as if it fills up
     // the potential solutions are likely invalid (many duplicate inputs)
-    ulong		collisions[5];
+    ulong		collisions[1];
     uint		coll;
     // in the final hash table, we are looking for a match on both the bits
     // part of the previous PREFIX colliding bits, and the last PREFIX bits.
