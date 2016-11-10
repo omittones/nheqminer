@@ -25,11 +25,11 @@
 
 ocl_silentarmy::ocl_silentarmy(int gpu_id) :
 	gpu_id(gpu_id) {
-	this->ctx = new solver_context_t();
+	this->ctx = nullptr;
 }
 
 ocl_silentarmy::~ocl_silentarmy() {
-	delete this->ctx;
+	assert(this->ctx == nullptr);
 }
 
 std::string ocl_silentarmy::getdevinfo() {
@@ -41,13 +41,25 @@ void ocl_silentarmy::printInfo() {
 }
 
 void ocl_silentarmy::start() {
-	if (this->ctx)
-		setup_context(*this->ctx, gpu_id);
+
+	if (this->ctx != nullptr)
+		throw std::exception("Solver already started!");
+
+	this->ctx = new solver_context_t();
+
+	setup_context(*this->ctx, gpu_id);
 }
 
 void ocl_silentarmy::stop() {
-	if (this->ctx)
+
+	if (this->ctx) {
 		destroy_context(*this->ctx);
+		delete this->ctx;
+		this->ctx = nullptr;
+	}
+	else {
+		throw std::exception("Solver already stopped!");
+	}
 }
 
 static void compress(uint8_t *out, uint32_t *inputs, uint32_t n)
@@ -96,6 +108,7 @@ void ocl_silentarmy::solve(
 	std::function<void(const std::vector<uint32_t>&, size_t, const unsigned char*)> solutionf,
 	std::function<void(void)> hashdonef) {
 
+	assert(this->ctx != nullptr);
 	assert(header_len == ZCASH_BLOCK_HEADER_LEN - ZCASH_NONCE_LEN);
 	assert(nonce_len == ZCASH_NONCE_LEN);
 	unsigned char context[ZCASH_BLOCK_HEADER_LEN];

@@ -360,7 +360,7 @@ void kernel_round0(__global ulong *blake_state, __global char *ht,
 
         input++;
       }
-#ifdef ENABLE_DEBUG
+#ifdef _DEBUG
     debug[tid * 2] = 0;
     debug[tid * 2 + 1] = dropped;
 #endif
@@ -566,7 +566,7 @@ void equihash_round(uint round, __global char *ht_src, __global char *ht_dst,
     if (round < 8)
 	// reset the counter in preparation of the next round
 	*(__global uint *)(ht_src + tid * NR_SLOTS * SLOT_LEN) = 0;
-#ifdef ENABLE_DEBUG
+#ifdef _DEBUG
     debug[tid * 2] = dropped_coll;
     debug[tid * 2 + 1] = dropped_stor;
 #endif

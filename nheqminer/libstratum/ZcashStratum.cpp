@@ -96,9 +96,9 @@ std::vector<unsigned char> GetMinimalFromIndices(std::vector<eh_index> indices,
 	return ret;
 }
 
-void static ZcashMinerThread(ZcashMiner* miner, int size, int pos, Solver* extra)
+void static ZcashMinerThread(ZcashMiner* miner, int size, int pos, Solver* solver)
 {
-	BOOST_LOG_CUSTOM(info, pos) << "Starting thread #" << pos << " (" << extra->getname() << ") " << extra->getdevinfo();
+	BOOST_LOG_CUSTOM(info, pos) << "Starting thread #" << pos << " (" << solver->getname() << ") " << solver->getdevinfo();
 
     std::shared_ptr<std::mutex> m_zmt(new std::mutex);
     CBlockHeader header;
@@ -140,7 +140,7 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos, Solver* extra
 
     try {
 
-		extra->start();
+		solver->start();
 
         while (true) {
             // Wait for work
@@ -235,7 +235,7 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos, Solver* extra
 					miner->submitSolution(solution, actualJobId);
 				};
 				
-				extra->solve(header,
+				solver->solve(header,
 					header_len,
 					(const char*)bNonce.begin(),
 					bNonce.size(),
@@ -280,14 +280,14 @@ void static ZcashMinerThread(ZcashMiner* miner, int size, int pos, Solver* extra
 
 	try
 	{
-		extra->stop();
+		solver->stop();
 	}
 	catch (const std::runtime_error &e)
 	{
 		BOOST_LOG_CUSTOM(error, pos) << e.what();
 	}
 
-	BOOST_LOG_CUSTOM(info, pos) << "Thread #" << pos << " ended (" << extra->getname() << ")";
+	BOOST_LOG_CUSTOM(info, pos) << "Thread #" << pos << " ended (" << solver->getname() << ")";
 }
 
 ZcashJob* ZcashJob::clone() const
@@ -514,7 +514,7 @@ std::mutex benchmark_work;
 std::vector<uint256*> benchmark_nonces;
 std::atomic_int benchmark_solutions;
 
-bool benchmark_solve_equihash(const CBlock& pblock, const char *header, unsigned int header_len, Solver* extra)
+bool benchmark_solve_equihash(const CBlock& pblock, const char *header, unsigned int header_len, Solver* solver)
 {
 	benchmark_work.lock();
 	if (benchmark_nonces.empty())
@@ -549,7 +549,7 @@ bool benchmark_solve_equihash(const CBlock& pblock, const char *header, unsigned
 		++benchmark_solutions;
 	};
 
-	extra->solve(header, header_len,
+	solver->solve(header, header_len,
 		(const char*)nonce->begin(), nonce->size(),
 		[]() { return false; },
 		solutionFound,
@@ -560,9 +560,9 @@ bool benchmark_solve_equihash(const CBlock& pblock, const char *header, unsigned
 	return true;
 }
 
-int benchmark_thread(int tid, Solver* extra)
+int benchmark_thread(int tid, Solver* solver)
 {
-	BOOST_LOG_TRIVIAL(debug) << "Thread #" << tid << " started (" << extra->getname() << ")";
+	BOOST_LOG_TRIVIAL(debug) << "Thread #" << tid << " started (" << solver->getname() << ")";
 
 	try
 	{
@@ -571,10 +571,11 @@ int benchmark_thread(int tid, Solver* extra)
 		CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
 		ss << I;
 
-		const char *tequihash_header = (char *)&ss[0];
-		unsigned int tequihash_header_len = ss.size();
+		const char *header = (char *)&ss[0];
+		unsigned int header_len = ss.size();
 
-		while (benchmark_solve_equihash(pblock, tequihash_header, tequihash_header_len, extra)) {}
+		while (benchmark_solve_equihash(pblock, header, header_len, solver)) {
+		}
 	}
 	catch (const std::runtime_error &e)
 	{
@@ -583,7 +584,7 @@ int benchmark_thread(int tid, Solver* extra)
 		return 0;
 	}
 
-	BOOST_LOG_TRIVIAL(debug) << "Thread #" << tid << " ended (" << extra->getname() << ")";
+	BOOST_LOG_TRIVIAL(debug) << "Thread #" << tid << " ended (" << solver->getname() << ")";
 
 	return 0;
 }
@@ -606,11 +607,9 @@ void ZcashMiner::doBenchmark(int hashes, std::vector<Solver*> solvers)
 
 	for (int i = 0; i < solvers.size(); ++i)
 	{
-		Solver* context = solvers.at(i);
-
-		BOOST_LOG_TRIVIAL(info) << "Benchmarking worker (" << context->getname() << ") " << context->getdevinfo();
-
-		context->start();
+		auto solver = solvers.at(i);
+		BOOST_LOG_TRIVIAL(info) << "Benchmarking worker (" << solver->getname() << ") " << solver->getdevinfo();
+		solver->start();
 	}
 
 	int nThreads = solvers.size();
@@ -629,6 +628,9 @@ void ZcashMiner::doBenchmark(int hashes, std::vector<Solver*> solvers)
 		bthreads[i].join();
 
 	auto end = std::chrono::high_resolution_clock::now();
+
+	for (int i = 0; i < solvers.size(); ++i)
+		solvers.at(i)->stop();
 
 	uint64_t msec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
