@@ -617,6 +617,7 @@ template class ZcashMiner<cpu_xenoncat, cuda_tromp, ocl_silentarmy>;
 template class ZcashMiner<cpu_tromp, cuda_tromp, ocl_silentarmy>;
 template class ZcashMiner<cpu_xenoncat, cuda_tromp_75, ocl_silentarmy>;
 template class ZcashMiner<cpu_tromp, cuda_tromp_75, ocl_silentarmy>;
+template class ZcashMiner<cpu_xenoncat, cuda_sa_solver, ocl_silentarmy>;
 
 std::mutex benchmark_work;
 std::vector<uint256*> benchmark_nonces;

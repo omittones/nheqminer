@@ -62,6 +62,7 @@ static ZcashStratumClientSSE2CUDA75_XMP* scSigSSE2C75_XMP = nullptr;
 static ZcashStratumClientAVXCUDA80_SA* scSigAVXC80_SA = nullptr;
 static ZcashStratumClientSSE2CUDA80_SA* scSigSSE2C80_SA = nullptr;
 static ZcashStratumClientAVXCUDA75_SA* scSigAVXC75_SA = nullptr;
+static ZcashStratumClientAVXCUDASA80_SA* scSigAVXCSA80_SA = nullptr;
 static ZcashStratumClientSSE2CUDA75_SA* scSigSSE2C75_SA = nullptr;
 
 extern "C" void stratum_sigint_handler(int signum) 
@@ -74,6 +75,7 @@ extern "C" void stratum_sigint_handler(int signum)
 	if (scSigSSE2C80_SA) scSigSSE2C80_SA->disconnect();
 	if (scSigAVXC75_SA) scSigAVXC75_SA->disconnect();
 	if (scSigSSE2C75_SA) scSigSSE2C75_SA->disconnect();
+	if (scSigAVXCSA80_SA) scSigAVXCSA80_SA->disconnect();
 }
 
 void print_help()
@@ -488,7 +490,11 @@ int main(int argc, char* argv[])
 			else { // sarmy
 				if (use_avx)
 				{
-					if (use_old_cuda)
+					if (use_cuda_sa) {
+						start_mining<ZMinerAVXCUDASA80_SA, ZcashStratumClientAVXCUDASA80_SA>(api_port, num_threads, cuda_device_count, opencl_device_count, opencl_platform,
+							host, port, user, password, scSigAVXCSA80_SA);
+					}
+					else if (use_old_cuda)
 					{
 						start_mining<ZMinerAVXCUDA75_SA, ZcashStratumClientAVXCUDA75_SA>(api_port, num_threads, cuda_device_count, opencl_device_count, opencl_platform,
 							host, port, user, password, scSigAVXC75_SA);

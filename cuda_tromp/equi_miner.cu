@@ -997,8 +997,6 @@ void eq_cuda_context::solve(const char *tequihash_header,
 	checkCudaErrors(cudaMemcpy(eq, device_eq, sizeof(equi), cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(solutions, eq->sols, MAXSOLS * sizeof(proof), cudaMemcpyDeviceToHost));
 
-	printf("cuda solved %d\n", eq->nsols);
-
 	for (unsigned s = 0; (s < eq->nsols) && (s < MAXSOLS); s++)
 	{
 		std::vector<uint32_t> index_vector(PROOFSIZE);
