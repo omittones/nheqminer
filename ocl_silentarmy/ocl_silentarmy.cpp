@@ -48,7 +48,7 @@ void ocl_silentarmy::printInfo() {
 	printf("Listing OpenCL supported devices: \n");
 	auto plats = scan_platforms();
 	for (auto i = 0; i < plats.size(); i++) {
-		printf("    %d. %s", i, plats[i].name.c_str());
+		printf("    %d. %s\n", i, plats[i].name.c_str());
 	}
 }
 

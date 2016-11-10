@@ -948,32 +948,35 @@ void eq_cuda_context::solve(const char *tequihash_header,
 	eq->setheadernonce(tequihash_header, tequihash_header_len, nonce, nonce_len);
 	checkCudaErrors(cudaMemcpy(device_eq, eq, sizeof(equi), cudaMemcpyHostToDevice));
 
-	digitH << <totalblocks, threadsperblock >> >(device_eq);
+	digitH<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
 #if BUCKBITS == 16 && RESTBITS == 4 && defined XINTREE && defined(UNROLL)
-	digit_1 << <totalblocks, threadsperblock >> >(device_eq);
+	digit_1<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
-	digit2 << <totalblocks, threadsperblock >> >(device_eq);
+	digit2<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
-	digit3 << <totalblocks, threadsperblock >> >(device_eq);
+	digit3<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
-	digit4 << <totalblocks, threadsperblock >> >(device_eq);
+	digit4<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
-	digit5 << <totalblocks, threadsperblock >> >(device_eq);
+	digit5<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
-	digit6 << <totalblocks, threadsperblock >> >(device_eq);
+	digit6<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
-	digit7 << <totalblocks, threadsperblock >> >(device_eq);
+	digit7<<<totalblocks, threadsperblock>>>(device_eq);
 	if (cancelf()) return;
-	digit8 << <totalblocks, threadsperblock >> >(device_eq);
+	digit8<<<totalblocks, threadsperblock>>>(device_eq);
 #else
 	for (u32 r = 1; r < WK; r++) {
-		r & 1 ? digitO << <totalblocks, threadsperblock >> >(device_eq, r)
-			: digitE << <totalblocks, threadsperblock >> >(device_eq, r);
+		r & 1 ? digitO<<<totalblocks, threadsperblock>>>(device_eq, r)
+			: digitE<<<totalblocks, threadsperblock>>>(device_eq, r);
 	}
 #endif
-	if (cancelf()) return;
-	digitK << <totalblocks, threadsperblock >> >(device_eq);
+	
+	if (cancelf()) 
+		return;
+
+	digitK<<<totalblocks, threadsperblock>>>(device_eq);
 
 	checkCudaErrors(cudaMemcpy(eq, device_eq, sizeof(equi), cudaMemcpyDeviceToHost));
 	checkCudaErrors(cudaMemcpy(solutions, eq->sols, MAXSOLS * sizeof(proof), cudaMemcpyDeviceToHost));
@@ -986,7 +989,10 @@ void eq_cuda_context::solve(const char *tequihash_header,
 		}
 
 		solutionf(index_vector, DIGITBITS, nullptr);
-		if (cancelf()) return;
+
+		if (cancelf())
+			break;
 	}
+
 	hashdonef();
 }
