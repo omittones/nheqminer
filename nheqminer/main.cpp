@@ -11,12 +11,8 @@
 #include "solver/solver.h"
 #include "solver/factory.h"
 
-#ifdef USE_CUDA_TROMP
 #include "../cuda_tromp/cuda_tromp.hpp"
-#endif
-#if defined(USE_OCL_SILENTARMY)
 #include "../ocl_silentarmy/ocl_silentarmy.hpp"
-#endif
 
 #include <thread>
 #include <chrono>
@@ -209,7 +205,6 @@ int main(int argc, char* argv[])
 
 		switch (argv[i][1])
 		{
-#if USE_CUDA_TROMP
 		case 'c':
 		{
 			switch (argv[i][2])
@@ -268,8 +263,6 @@ int main(int argc, char* argv[])
 			}
 			break;
 		}
-#endif
-#ifdef USE_OCL_SILENTARMY
 		case 'o':
 		{
 			switch (argv[i][2])
@@ -312,7 +305,6 @@ int main(int argc, char* argv[])
 			}
 			break;
 		}
-#endif
 		case 'l':
 			location = argv[++i];
 			break;
@@ -364,7 +356,7 @@ int main(int argc, char* argv[])
 
 	auto solvers = Factory::AllocateSolvers(
 		num_threads, forceCpuExt,
-		cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb,
+		cuda_device_count, cuda_enabled, cuda_blocks, cuda_tpb, use_cuda_sa,
 		opencl_device_count, opencl_enabled, opencl_threads);
 
 	try
