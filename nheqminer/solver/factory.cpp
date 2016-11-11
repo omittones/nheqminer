@@ -69,6 +69,7 @@ std::vector<Solver*> Factory::AllocateSolvers(
 				context->blocks = cuda_b[i];
 			if (cuda_t[i] > 0)
 				context->threadsperblock = cuda_t[i];
+			ret.push_back(context);
 		}
 		else {
 			auto context = new cuda_tromp(0, cuda_en[i]);
