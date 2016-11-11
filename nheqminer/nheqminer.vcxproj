@@ -217,6 +217,9 @@
     <ProjectReference Include="..\cpu_xenoncat\cpu_xenoncat.vcxproj">
       <Project>{299e011b-5242-4eda-b2f2-73c9b48f12fd}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\cuda_silentarmy\cuda_silentarmy.vcxproj">
+      <Project>{76ac1e54-c6ac-465b-af41-416b2c3874c1}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\cuda_tromp\cuda_tromp.vcxproj">
       <Project>{33c2b469-f025-4223-b9b6-e69d42fea7d6}</Project>
     </ProjectReference>
