@@ -4,19 +4,11 @@
 #include <array>
 #include "boost\log\trivial.hpp"
 
-#ifdef USE_CPU_TROMP
-#define __AVX__
 #include "../cpu_tromp/cpu_tromp.hpp"
-#endif
-#ifdef USE_CPU_XENONCAT
 #include "../cpu_xenoncat/cpu_xenoncat.hpp"
-#endif
-#ifdef USE_CUDA_TROMP
 #include "../cuda_tromp/cuda_tromp.hpp"
-#endif
-#ifdef USE_OCL_SILENTARMY
 #include "../ocl_silentarmy/ocl_silentarmy.hpp"
-#endif
+#include "../cuda_silentarmy/cuda_silentarmy.hpp"
 
 void detect_AVX_and_AVX2(bool &canUseAvx1, bool &canUseAvx2)
 {
@@ -57,7 +49,7 @@ void detect_AVX_and_AVX2(bool &canUseAvx1, bool &canUseAvx2)
 
 std::vector<Solver*> Factory::AllocateSolvers(
 	int cpu_threads, ForceMode forceMode,
-	int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t,
+	int cuda_count, int* cuda_en, int* cuda_b, int* cuda_t, bool use_cuda_silentarmy,
 	int opencl_count, int* opencl_en, int* opencl_t) {
 
 	std::vector<Solver*> ret;
@@ -69,72 +61,62 @@ std::vector<Solver*> Factory::AllocateSolvers(
 	BOOST_LOG_TRIVIAL(info) << "Using AVX: " << (canAvx1 ? "YES" : "NO");
 	BOOST_LOG_TRIVIAL(info) << "Using AVX2: " << (canAvx2 ? "YES" : "NO");
 
-#if USE_CUDA_TROMP
 	for (int i = 0; i < cuda_count; ++i)
 	{
-		auto context = new cuda_tromp(0, cuda_en[i]);
-		if (cuda_b[i] > 0)
-			context->blocks = cuda_b[i];
-		if (cuda_t[i] > 0)
-			context->threadsperblock = cuda_t[i];
-		ret.push_back(context);
+		if (use_cuda_silentarmy) {
+			auto context = new cuda_sa_solver(cuda_en[i]);
+			if (cuda_b[i] > 0)
+				context->blocks = cuda_b[i];
+			if (cuda_t[i] > 0)
+				context->threadsperblock = cuda_t[i];
+		}
+		else {
+			auto context = new cuda_tromp(0, cuda_en[i]);
+			if (cuda_b[i] > 0)
+				context->blocks = cuda_b[i];
+			if (cuda_t[i] > 0)
+				context->threadsperblock = cuda_t[i];
+			ret.push_back(context);
+		}
 	}
-#endif
-#ifdef USE_OCL_SILENTARMY
+
 	for (int i = 0; i < opencl_count; ++i)
 	{
 		auto context = new ocl_silentarmy(opencl_en[i], opencl_t[i]);
 		ret.push_back(context);
 	}
-#endif
 
 	if (cpu_threads < 0) {
 		cpu_threads = std::thread::hardware_concurrency();
 		if (cpu_threads < 1)
 			cpu_threads = 1;
 		else if (ret.size() > 0)
-			--cpu_threads; // decrease number of threads if there are GPU workers
+			--cpu_threads;
 	}
 
-	bool useAvx2 = true;
-	if (forceMode == ForceMode::CPU_XENON_AVX) {
-		useAvx2 = false;
-		canAvx1 = true;
+	if (forceMode == ForceMode::NONE) {
+		forceMode = ForceMode::CPU_TROMP;
+		if (canAvx1)
+			forceMode = ForceMode::CPU_XENON_AVX;
+		if (canAvx2)
+			forceMode = ForceMode::CPU_XENON_AVX2;
 	}
-	else if (forceMode == ForceMode::CPU_XENON_AVX2) {
-		useAvx2 = true;
-		canAvx1 = true;
-		canAvx2 = true;
-	}
-
-#if USE_CPU_XENONCAT
-
-	if (forceMode == ForceMode::CPU_TROMP) {
-#if USE_CPU_TROMP
-		for (int i = 0; i < cpu_threads; ++i)
-		{
+	
+	for (int i = 0; i < cpu_threads; ++i)
+	{
+		if (forceMode == ForceMode::CPU_TROMP) {
 			auto context = new cpu_tromp();
 			ret.push_back(context);
 		}
-#endif
-	}
-	else {
-		for (int i = 0; i < cpu_threads; ++i)
-		{
-			auto context = new cpu_xenoncat(canAvx2 && useAvx2);
+		else if (forceMode == ForceMode::CPU_XENON_AVX) {
+			auto context = new cpu_xenoncat(false);
+			ret.push_back(context);
+		}
+		else if (forceMode == ForceMode::CPU_XENON_AVX2) {
+			auto context = new cpu_xenoncat(true);
 			ret.push_back(context);
 		}
 	}
-
-#elif USE_CPU_TROMP
-
-	for (int i = 0; i < cpu_threads; ++i)
-	{
-		auto context = new cpu_tromp();
-		ret.push_back(context);
-	}
-
-#endif
 
 	return ret;
 }
