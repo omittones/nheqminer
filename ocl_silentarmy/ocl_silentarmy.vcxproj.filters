@@ -2,46 +2,34 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="ocl_silentarmy.cpp" />
-    <ClCompile Include="remote\blake.cpp">
+    <ClCompile Include="remote\main.c">
       <Filter>remote</Filter>
     </ClCompile>
-    <ClCompile Include="remote\windows\logging.cpp">
+    <ClCompile Include="remote\blake.c">
       <Filter>remote</Filter>
     </ClCompile>
-    <ClCompile Include="remote\sha256.cpp">
-      <Filter>remote</Filter>
-    </ClCompile>
-    <ClCompile Include="remote\solver.cpp">
+    <ClCompile Include="remote\sha256.c">
       <Filter>remote</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ocl_silentarmy.hpp" />
-    <ClInclude Include="remote\windows\gettimeofday.h">
+    <ClInclude Include="remote\param.h">
+      <Filter>remote</Filter>
+    </ClInclude>
+    <ClInclude Include="remote\blake.h">
       <Filter>remote</Filter>
     </ClInclude>
     <ClInclude Include="remote\sha256.h">
       <Filter>remote</Filter>
     </ClInclude>
-    <ClInclude Include="remote\blake.hpp">
+    <ClInclude Include="remote\logging.hpp">
       <Filter>remote</Filter>
     </ClInclude>
-    <ClInclude Include="remote\windows\memrchr.h">
+    <ClInclude Include="remote\crossplatform.hpp">
       <Filter>remote</Filter>
     </ClInclude>
-    <ClInclude Include="remote\windows\logging.h">
-      <Filter>remote</Filter>
-    </ClInclude>
-    <ClInclude Include="remote\windows\crossplatform.h">
-      <Filter>remote</Filter>
-    </ClInclude>
-    <ClInclude Include="remote\clErrors.h">
-      <Filter>remote</Filter>
-    </ClInclude>
-    <ClInclude Include="remote\param.h">
-      <Filter>remote</Filter>
-    </ClInclude>
-    <ClInclude Include="remote\solver.h">
+    <ClInclude Include="remote\solver.hpp">
       <Filter>remote</Filter>
     </ClInclude>
   </ItemGroup>

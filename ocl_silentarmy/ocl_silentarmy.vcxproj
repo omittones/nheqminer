@@ -12,28 +12,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ocl_silentarmy.cpp" />
-    <ClCompile Include="remote\blake.cpp" />
-    <ClCompile Include="remote\sha256.cpp" />
-    <ClCompile Include="remote\solver.cpp" />
-    <ClCompile Include="remote\windows\logging.cpp" />
+    <ClCompile Include="remote\blake.c" />
+    <ClCompile Include="remote\main.c" />
+    <ClCompile Include="remote\sha256.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ocl_silentarmy.hpp" />
-    <ClInclude Include="remote\blake.hpp" />
-    <ClInclude Include="remote\clErrors.h" />
+    <ClInclude Include="remote\blake.h" />
+    <ClInclude Include="remote\crossplatform.hpp" />
+    <ClInclude Include="remote\logging.hpp" />
     <ClInclude Include="remote\param.h" />
     <ClInclude Include="remote\sha256.h" />
-    <ClInclude Include="remote\solver.h" />
-    <ClInclude Include="remote\windows\crossplatform.h" />
-    <ClInclude Include="remote\windows\gettimeofday.h" />
-    <ClInclude Include="remote\windows\logging.h" />
-    <ClInclude Include="remote\windows\memrchr.h" />
+    <ClInclude Include="remote\solver.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="remote\input.cl">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-    </None>
+    <None Include="remote\input.cl" />
     <None Include="zcash\gpu\input.cl" />
     <None Include="zcash\gpu\kernel.cl" />
   </ItemGroup>
@@ -109,6 +102,7 @@ copy "$(ProjectDir)remote\param.h" "$(OutDir)param.h"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)nheqminer\;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

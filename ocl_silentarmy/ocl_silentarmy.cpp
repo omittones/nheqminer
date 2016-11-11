@@ -14,9 +14,9 @@
 #include "CL/opencl.h"
 
 #include "remote/param.h"
-#include "remote/blake.hpp"
-#include "remote/solver.h"
-#include "remote/windows/logging.h"
+#include "remote/blake.h"
+#include "remote/solver.hpp"
+#include "remote/logging.hpp"
 
 #define COLLISION_BIT_LENGTH (PARAM_N / (PARAM_K+1))
 #define COLLISION_BYTE_LENGTH ((COLLISION_BIT_LENGTH+7)/8)
